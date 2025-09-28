@@ -7,4 +7,5 @@ add_executable(terminal_rpg main.cpp
         item.hpp
         enemy.hpp
         chest.hpp
+        player.hpp
 )
