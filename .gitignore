@@ -1,5 +1,7 @@
+# Ignore build directories
 cmake-build-debug/
-.idea/
-*.xml
-*.iml
 
+# Ignore JetBrains IDE/project files
+.idea/
+*.iml
+*.xml
