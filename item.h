@@ -7,7 +7,6 @@
 #include <string>
 
 struct Item;
-enum WeaponType;
 
 enum ItemType {
     WEAPON,
@@ -32,6 +31,18 @@ enum Rarity {
     EPIC,
     LEGENDARY,
     MYTHIC
+};
+
+enum WeaponType {
+    SWORD,
+    AXE,
+    BOW,
+    DAGGER,
+    STAFF,
+    MACE,
+    SPEAR,
+    CROSSBOW,
+    HAMMER,
 };
 
 struct WeaponData {
@@ -70,15 +81,4 @@ struct Item {
     bool equipped;
 };
 
-enum WeaponType {
-    SWORD,
-    AXE,
-    BOW,
-    DAGGER,
-    STAFF,
-    MACE,
-    SPEAR,
-    CROSSBOW,
-    HAMMER,
-};
 #endif //TERMINAL_RPG_ITEM_H
