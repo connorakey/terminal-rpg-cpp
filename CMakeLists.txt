@@ -11,4 +11,5 @@ add_executable(terminal_rpg main.cpp
         enemy.cpp
         player.cpp
         chest.cpp
+        item.cpp
 )

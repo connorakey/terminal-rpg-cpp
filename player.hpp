@@ -9,7 +9,7 @@
 #include "item.hpp"
 class Player {
 public:
-    Player(const std::string &name,
+    Player(const std::string& name,
            int health,
            unsigned int maxHealth,
            unsigned int stamina,
@@ -63,7 +63,7 @@ public:
 
     unsigned int getResistance() const;
 
-    const std::string &getName() const;
+    const std::string& getName() const;
 
     unsigned int getLevel() const;
 
@@ -73,7 +73,7 @@ public:
 
     unsigned int getNextLevelExp() const;
 
-    const std::vector<Item*> &getInventory() const;
+    const std::vector<Item*>& getInventory() const;
 
     Item* getEquippedWeapon() const;
 

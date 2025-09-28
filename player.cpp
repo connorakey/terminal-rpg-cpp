@@ -1,7 +1,7 @@
 #include "player.hpp"
 #include <algorithm>
 
-Player::Player(const std::string &name,
+Player::Player(const std::string& name,
            int health,
            unsigned int maxHealth,
            unsigned int stamina,
