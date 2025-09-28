@@ -53,6 +53,7 @@ struct WeaponData {
     bool onCooldown;
     WeaponType weaponType;
     int durability; // amount of uses before breaking
+    int staminaCost;
 };
 
 struct ArmorData {
