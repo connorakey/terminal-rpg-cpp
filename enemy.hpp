@@ -9,8 +9,8 @@
 
 class Enemy {
 public:
-    Enemy(const std::string &name, const std::string &description, int health, int minAttack, int maxAttack, int defence)
-        : name(name), description(description), health(health), minAttack(minAttack), maxAttack(maxAttack), defence(defence) {}
+    Enemy(const std::string &name, const std::string &description, int health, int minAttack, int maxAttack, int defence, int resistance)
+        : name(name), description(description), health(health), minAttack(minAttack), maxAttack(maxAttack), defence(defence), resistance(resistance) {}
 
     bool isAlive() const { return health > 0; }
 
@@ -22,7 +22,7 @@ public:
     }
 
     void takeSpellDamage(int damage) {
-        health -= damage;
+        health -= (damage - resistance);
         if (health < 0) health = 0;
     }
 
@@ -51,5 +51,6 @@ private:
     int minAttack;
     int maxAttack;
     int defence;
+    int resistance;
 };
 #endif //TERMINAL_RPG_ENEMY_H
