@@ -5,6 +5,8 @@
 #ifndef TERMINAL_RPG_ENEMY_H
 #define TERMINAL_RPG_ENEMY_H
 #include <string>
+#include <random>
+
 class Enemy {
 public:
     Enemy(const std::string &name, const std::string &description, int health, int minAttack, int maxAttack, int defence)
@@ -19,8 +21,20 @@ public:
         if (health < 0) health = 0;
     }
 
+    void takeSpellDamage(int damage) {
+        health -= damage;
+        if (health < 0) health = 0;
+    }
+
+    void healEnemy(int amount) {
+        health += amount;
+    }
+
     int attack() const {
-        return minAttack + (rand() % (maxAttack - minAttack + 1));
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(minAttack, maxAttack);
+        return dist(gen);
     }
 
     int getHealth() const { return health; }
