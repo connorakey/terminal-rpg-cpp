@@ -63,6 +63,8 @@ public:
         // Fallback if chest is empty, or something unexpected occurs.
         return {EMPTY, nullptr, {NONE, 0, false}};
     }
+
+    Item* getItem() const { return item; }
 private:
     bool isLocked;
     trap trapped;
