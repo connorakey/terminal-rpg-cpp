@@ -7,6 +7,7 @@
 #include <string>
 
 struct Item;
+enum WeaponType;
 
 enum ItemType {
     WEAPON,
@@ -36,6 +37,11 @@ enum Rarity {
 struct WeaponData {
     int minDamage;
     int maxDamage;
+    int accuracy; // percentage
+    int cooldown; // in milliseconds
+    bool onCooldown;
+    WeaponType weaponType;
+    int durability; // amount of uses before breaking
 };
 
 struct ArmorData {
@@ -55,10 +61,24 @@ struct Item {
     int value;
     int weight;
     ItemType type;
+    Rarity rarity;
     union {
         WeaponData weapon;
         ArmorData armor;
         PotionData potion;
     } data;
+    bool equipped;
+};
+
+enum WeaponType {
+    SWORD,
+    AXE,
+    BOW,
+    DAGGER,
+    STAFF,
+    MACE,
+    SPEAR,
+    CROSSBOW,
+    HAMMER,
 };
 #endif //TERMINAL_RPG_ITEM_H
