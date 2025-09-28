@@ -58,6 +58,7 @@ struct WeaponData {
 
 struct ArmorData {
     int armorValue;
+    int durability; // amount of hits before breaking
 };
 
 struct PotionData {
