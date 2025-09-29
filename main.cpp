@@ -1,14 +1,24 @@
 #include <iostream>
+#include <string>
 #include <limits>
+#include <random>
+#include <vector>
 #include "player.hpp"
+#include "itemdatabase.hpp"
 
 // Function declarations
 void printCharacterInformation(const Player& player);
 void printInventory(const std::vector<Item*>& inventory);
 void removeItemFromInventory(std::vector<Item*>& inventory);
+void demonstrateCurrencyPickup(Player& player);
+int generateRandomNumber(int min, int max);
 
 int main() {
     std::cout << "------ Terminal RPG ------" << '\n';
+
+    // Initialize the item database
+    ItemDatabase::getInstance().initialize();
+
     std::cout << "Creating player..." << '\n';
     std::cout << "Enter your character's name: ";
     std::string playerName;
@@ -17,6 +27,18 @@ int main() {
     std::cout << "Welcome, " << playerName << "!" << '\n' << '\n';
     printCharacterInformation(player);
     return 0;
+}
+
+void triggerRandomEvent(Player& player) {
+    int enemyPercentage = 60;
+    int chestPercentage = 40;
+    int roll = generateRandomNumber(1, 100);
+
+    if (roll <= enemyPercentage) {
+        // Trigger enemy encounter
+    } else if (roll <= enemyPercentage + chestPercentage) {
+        // Spawn a chest
+    }
 }
 
 void printCharacterInformation(const Player& player) {
@@ -71,6 +93,9 @@ void printInventory(const std::vector<Item*>& inventory) {
             std::cout << "    Potion Type: " << pd.getPotionType() << '\n';
             std::cout << "    Min Potency: " << pd.getMinPotency() << '\n';
             std::cout << "    Max Potency: " << pd.getMaxPotency() << '\n';
+        } else if (item->getType() == CURRENCY) {
+            std::cout << "  Currency Data:" << '\n';
+            std::cout << "    Gold Value: " << item->getValue() << '\n';
         }
         std::cout << "--------------------------" << '\n';
     }
@@ -97,4 +122,12 @@ void removeItemFromInventory(std::vector<Item*>& inventory) {
     Item* removed = inventory[choice - 1];
     inventory.erase(inventory.begin() + (choice - 1));
     std::cout << "Removed item: " << removed->getName() << " from inventory." << '\n';
+}
+
+
+int generateRandomNumber(int min, int max) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(min, max);
+    return dist(gen);
 }
