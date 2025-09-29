@@ -8,8 +8,11 @@ add_executable(terminal_rpg main.cpp
         enemy.hpp
         chest.hpp
         player.hpp
+        itemdatabase.hpp
         enemy.cpp
         player.cpp
         chest.cpp
         item.cpp
+        itemdatabase.cpp
+        itemdatabase.cpp
 )
