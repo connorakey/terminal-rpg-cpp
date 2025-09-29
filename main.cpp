@@ -5,9 +5,11 @@
 #include <vector>
 #include "player.hpp"
 #include "itemdatabase.hpp"
+#include "chest.hpp"
 
 // Function declarations
 void triggerRandomEvent(Player& player);
+void spawnChest(Player& player);
 void spawnMerchant(Player& player);
 void printCharacterInformation(const Player& player);
 void printInventory(const std::vector<Item*>& inventory);
@@ -39,9 +41,154 @@ void triggerRandomEvent(Player& player) {
     if (roll <= enemyPercentage) {
         // Trigger enemy encounter
     } else if (roll <= enemyPercentage + chestPercentage) {
-        // Spawn a chest
+        spawnChest(player);
     } else if (roll <= enemyPercentage + chestPercentage + merchantPercentage) {
         spawnMerchant(player);
+    }
+}
+
+void spawnChest(Player& player) {
+    std::cout << "You found a chest!" << '\n';
+    std::cout << "Do you want to open it? (y/n): ";
+    char choice;
+    std::cin >> choice;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (choice == 'y' || choice == 'Y') {
+        // Generate random chest properties
+        bool isLocked = generateRandomNumber(1, 100) > 90; // 10% chance locked
+
+        // Determine trap type
+        trap trapType = NONE;
+        int trapRoll = generateRandomNumber(1, 100);
+        if (trapRoll <= 20) { // 20% chance trapped
+            int trapTypeRoll = generateRandomNumber(1, 3);
+            switch (trapTypeRoll) {
+                case 1:
+                    trapType = POISON_DART;
+                    break;
+                case 2:
+                    trapType = EXPLOSION;
+                    break;
+                case 3:
+                    trapType = ALARM;
+                    break;
+                default:
+                    trapType = POISON_DART;
+            }
+        }
+
+        // Generate a random item for the chest
+        Item* chestItem = nullptr;
+        int itemTypeRoll = generateRandomNumber(1, 100);
+        ItemType selectedType;
+        if (itemTypeRoll <= 40) {
+            selectedType = CURRENCY; // 40% chance for currency
+        } else if (itemTypeRoll <= 65) {
+            selectedType = POTION; // 25% chance for potions
+        } else if (itemTypeRoll <= 85) {
+            selectedType = WEAPON; // 20% chance for weapons
+        } else if (itemTypeRoll <= 95) {
+            selectedType = ARMOR; // 10% chance for armor
+        } else {
+            selectedType = MISC; // 5% chance for misc items
+        }
+
+        // Get all items of the selected type
+        std::vector<std::string> itemsOfType = ItemDatabase::getInstance().getItemsByType(selectedType);
+
+        if (!itemsOfType.empty()) {
+            // Select a random item from the type
+            int randomIndex = generateRandomNumber(0, itemsOfType.size() - 1);
+            std::string selectedItemName = itemsOfType[randomIndex];
+
+            // Create the item
+            chestItem = ItemDatabase::getInstance().createItem(selectedItemName, 1);
+        }
+
+        // Create the chest with generated properties
+        Chest chest(isLocked, trapType, chestItem);
+
+        // Attempt to open the chest
+        OpenChestResult result = chest.open();
+
+        // Handle the result
+        switch (result.result) {
+            case SUCCESS:
+                std::cout << "You successfully opened the chest!" << '\n';
+                if (result.item) {
+                    std::cout << "You found: " << result.item->getName() << "!" << '\n';
+                    std::cout << result.item->getDescription() << '\n';
+
+                    // Handle the item based on its type
+                    if (result.item->getType() == CURRENCY) {
+                        player.pickupItem(result.item);
+                    } else {
+                        player.addItemToInventory(result.item);
+                    }
+                }
+                break;
+
+            case LOCKED:
+                std::cout << "The chest is locked!" << '\n';
+                // Clean up the item since player couldn't get it
+                if (chestItem) delete chestItem;
+                break;
+
+            case TRAPPED:
+                std::cout << "The chest was trapped!" << '\n';
+
+                // Handle trap effects
+                switch (result.trapInfo.type) {
+                    case POISON_DART:
+                        std::cout << "A poison dart shoots out and hits you!" << '\n';
+                        std::cout << "You take " << result.trapInfo.damage << " poison damage!" << '\n';
+                        player.takeDamage(result.trapInfo.damage);
+                        break;
+
+                    case EXPLOSION:
+                        std::cout << "The chest explodes!" << '\n';
+                        std::cout << "You take " << result.trapInfo.damage << " explosive damage!" << '\n';
+                        player.takeDamage(result.trapInfo.damage);
+                        if (result.trapInfo.summonsEnemies) {
+                            std::cout << "The explosion attracts nearby enemies!" << '\n';
+                            // TODO: Implement enemy summoning logic
+                        }
+                        break;
+
+                    case ALARM:
+                        std::cout << "An alarm goes off, alerting nearby creatures!" << '\n';
+                        if (result.trapInfo.summonsEnemies) {
+                            std::cout << "Enemies are approaching!" << '\n';
+                            // TODO: Implement enemy summoning logic
+                        }
+                        break;
+
+                    case NONE:
+                        break;
+                }
+
+                // Player still gets the item if they survive the trap
+                if (result.item) {
+                    std::cout << "Despite the trap, you manage to retrieve the item!" << '\n';
+                    std::cout << "You found: " << result.item->getName() << "!" << '\n';
+                    std::cout << result.item->getDescription() << '\n';
+
+                    // Handle the item based on its type
+                    if (result.item->getType() == CURRENCY) {
+                        player.pickupItem(result.item);
+                    } else {
+                        player.addItemToInventory(result.item);
+                    }
+                }
+                break;
+
+            case EMPTY:
+                std::cout << "You opened the chest, but it's empty." << '\n';
+                break;
+        }
+    } else {
+        std::cout << "You decided to leave the chest alone." << '\n';
     }
 }
 
