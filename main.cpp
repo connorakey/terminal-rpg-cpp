@@ -31,13 +31,16 @@ int main() {
 
 void triggerRandomEvent(Player& player) {
     int enemyPercentage = 60;
-    int chestPercentage = 40;
+    int chestPercentage = 30;
+    int merchantPercentage = 10;
     int roll = generateRandomNumber(1, 100);
 
     if (roll <= enemyPercentage) {
         // Trigger enemy encounter
     } else if (roll <= enemyPercentage + chestPercentage) {
         // Spawn a chest
+    } else if (roll <= enemyPercentage + chestPercentage + merchantPercentage) {
+        // Spawn a merchant
     }
 }
 
