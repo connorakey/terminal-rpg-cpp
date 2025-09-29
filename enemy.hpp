@@ -7,9 +7,28 @@
 #include <string>
 #include <random>
 
+enum class EnemyType {
+    BEAST,
+    UNDEAD,
+    HUMANOID,
+    DRAGON,
+    ELEMENTAL,
+    DEMON,
+    GOBLINOID
+};
+
+enum class EnemyRarity {
+    COMMON,
+    UNCOMMON,
+    RARE,
+    EPIC,
+    LEGENDARY,
+    BOSS
+};
+
 class Enemy {
 public:
-    Enemy(const std::string &name, const std::string &description, int level, int health, int minAttack, int maxAttack, int defence, int resistance);
+    Enemy(const std::string &name, const std::string &description, int level, int health, int minAttack, int maxAttack, int defence, int resistance, EnemyType type, EnemyRarity rarity);
 
     bool isAlive() const;
     void takeDamage(int damage);
@@ -25,6 +44,8 @@ public:
     int getDefence() const;
     int getResistance() const;
     int getLevel() const;
+    EnemyType getType() const;
+    EnemyRarity getRarity() const;
 
 private:
     std::string name;
@@ -35,5 +56,7 @@ private:
     int maxAttack;
     int defence;
     int resistance;
+    EnemyType type;
+    EnemyRarity rarity;
 };
 #endif //TERMINAL_RPG_ENEMY_H

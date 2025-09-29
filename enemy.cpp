@@ -1,8 +1,8 @@
 #include "enemy.hpp"
 #include <random>
 
-Enemy::Enemy(const std::string &name, const std::string &description, int level, int health, int minAttack, int maxAttack, int defence, int resistance)
-    : name(name), description(description), level(level), health(health), minAttack(minAttack), maxAttack(maxAttack), defence(defence), resistance(resistance) {}
+Enemy::Enemy(const std::string &name, const std::string &description, int level, int health, int minAttack, int maxAttack, int defence, int resistance, EnemyType type, EnemyRarity rarity)
+    : name(name), description(description), level(level), health(health), minAttack(minAttack), maxAttack(maxAttack), defence(defence), resistance(resistance), type(type), rarity(rarity) {}
 
 bool Enemy::isAlive() const {
     return health > 0;
@@ -61,4 +61,12 @@ int Enemy::getResistance() const {
 
 int Enemy::getLevel() const {
     return level;
+}
+
+EnemyType Enemy::getType() const {
+    return type;
+}
+
+EnemyRarity Enemy::getRarity() const {
+    return rarity;
 }
