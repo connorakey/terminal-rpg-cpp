@@ -7,10 +7,11 @@
 #include "itemdatabase.hpp"
 
 // Function declarations
+void triggerRandomEvent(Player& player);
+void spawnMerchant(Player& player);
 void printCharacterInformation(const Player& player);
 void printInventory(const std::vector<Item*>& inventory);
 void removeItemFromInventory(std::vector<Item*>& inventory);
-void demonstrateCurrencyPickup(Player& player);
 int generateRandomNumber(int min, int max);
 
 int main() {
@@ -43,6 +44,169 @@ void triggerRandomEvent(Player& player) {
         // Spawn a merchant
     }
 }
+
+void spawnMerchant(Player& player) {
+    std::cout << "A wandering merchant appears!" << '\n';
+    int rand = generateRandomNumber(1, 6);
+    switch (rand) {
+        case 1:
+            std::cout << "Merchant: Well hello there young traveler! Would you be intresting in selling me your wares?" << '\n';
+            break;
+        case 2:
+            std::cout << "Merchant: How are ye doing on this fine day? Care to trade?" << '\n';
+            break;
+        case 3:
+            std::cout << "Merchant: I have the finest goods in all the land! Care to take a look?" << '\n';
+            break;
+        case 4:
+            std::cout << "Merchant: I've heard tales of your adventures. Care to trade?" << '\n';
+            break;
+        case 5:
+            std::cout << "Merchant: I remember when I was your age, full of dreams and ambitions. Care to trade?" << '\n';
+            break;
+        case 6:
+            std::cout << "Merchant: The road is dangerous, but my goods can make it safer. Care to trade?" << '\n';
+            break;
+        default:
+            std::cout << "Merchant: Greetings! Care to trade?" << '\n';
+            break;
+    }
+    std::cout << "------ Merchant Inventory ------" << '\n';
+    rand = generateRandomNumber(1, 5); // Random number generator for the items types (as of now only 5 types)
+    std::vector<std::string> itemNames;
+    switch (rand) {
+        case 1:
+            itemNames = ItemDatabase::getInstance().getItemsByType(WEAPON);
+            break;
+        case 2:
+            itemNames = ItemDatabase::getInstance().getItemsByType(ARMOR);
+            break;
+        case 3:
+            itemNames = ItemDatabase::getInstance().getItemsByType(POTION);
+            break;
+        case 4:
+            itemNames = ItemDatabase::getInstance().getItemsByType(CURRENCY);
+            break;
+        case 5:
+            itemNames = ItemDatabase::getInstance().getItemsByType(MISC);
+            break;
+        default:
+            itemNames = std::vector<std::string>(); // Empty vector
+            break;
+    }
+    // Build merchant inventory
+    std::vector<Item*> merchantInventory;
+    int slotId = 1;
+    for (const std::string& itemName : itemNames) {
+        Item* item = ItemDatabase::getInstance().createItem(itemName, slotId++);
+        if (item) merchantInventory.push_back(item);
+    }
+    // Print merchant inventory
+    for (size_t i = 0; i < merchantInventory.size(); ++i) {
+        Item* item = merchantInventory[i];
+        std::cout << i + 1 << ". " << item->getName() << " (" << item->getValue() << " gold)" << '\n';
+        std::cout << "    " << item->getDescription() << '\n';
+        std::cout << "    Type: " << item->getType() << ", Rarity: " << item->getRarity() << '\n';
+        // Type-specific data
+        if (item->getType() == WEAPON) {
+            const WeaponData& wd = item->getWeaponData();
+            std::cout << "    Weapon Data:" << '\n';
+            std::cout << "      Min Damage: " << wd.getMinDamage() << '\n';
+            std::cout << "      Max Damage: " << wd.getMaxDamage() << '\n';
+            std::cout << "      Accuracy: " << wd.getAccuracy() << " %" << '\n';
+            std::cout << "      Cooldown: " << wd.getCooldown() << " ms" << '\n';
+            std::cout << "      Weapon Type: " << wd.getWeaponType() << '\n';
+            std::cout << "      Durability: " << wd.getDurability() << '\n';
+            std::cout << "      Stamina Cost: " << wd.getStaminaCost() << '\n';
+        } else if (item->getType() == ARMOR) {
+            const ArmorData& ad = item->getArmorData();
+            std::cout << "    Armor Data:" << '\n';
+            std::cout << "      Armor Value: " << ad.getArmorValue() << '\n';
+            std::cout << "      Durability: " << ad.getDurability() << '\n';
+        } else if (item->getType() == POTION) {
+            const PotionData& pd = item->getPotionData();
+            std::cout << "    Potion Data:" << '\n';
+            std::cout << "      Potion Type: " << pd.getPotionType() << '\n';
+            std::cout << "      Min Potency: " << pd.getMinPotency() << '\n';
+            std::cout << "      Max Potency: " << pd.getMaxPotency() << '\n';
+        } else if (item->getType() == CURRENCY) {
+            std::cout << "    Currency Data:" << '\n';
+            std::cout << "      Gold Value: " << item->getValue() << '\n';
+        }
+        std::cout << "--------------------------" << '\n';
+    }
+    std::cout << "Merchant: If you see anything you like, just let me know!" << '\n';
+    int choice = 0;
+    while (choice != 3) {
+        std::cout << "1. Buy Item" << '\n';
+        std::cout << "2. Sell Item" << '\n';
+        std::cout << "3. Leave" << '\n';
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+        if (std::cin.fail() || choice < 1 || choice > 3) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid choice. Please enter a number between 1 and 3." << '\n';
+            continue;
+        }
+        switch (choice) {
+            case 1: {
+                // Buy Item
+                std::cout << "Which item would you like to buy? Enter the number: ";
+                int buyChoice = 0;
+                std::cin >> buyChoice;
+                if (std::cin.fail() || buyChoice < 1 || buyChoice > (int)merchantInventory.size()) {
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    std::cout << "Invalid item number." << '\n';
+                    break;
+                }
+                Item* itemToBuy = merchantInventory[buyChoice - 1];
+                if (player.getGold() < itemToBuy->getValue()) {
+                    std::cout << "You don't have enough gold!" << '\n';
+                } else {
+                    player.removeGold(itemToBuy->getValue());
+                    player.addItemToInventory(itemToBuy);
+                    std::cout << "You bought " << itemToBuy->getName() << " for " << itemToBuy->getValue() << " gold." << '\n';
+                    merchantInventory.erase(merchantInventory.begin() + (buyChoice - 1));
+                }
+                break;
+            }
+            case 2: {
+                // Sell Item
+                if (player.getInventory().empty()) {
+                    std::cout << "You have no items to sell." << '\n';
+                    break;
+                }
+                std::cout << "Your inventory:" << '\n';
+                printInventory(player.getInventory());
+                std::cout << "Enter the number of the item to sell: ";
+                int sellChoice = 0;
+                std::cin >> sellChoice;
+                const std::vector<Item*>& inv = player.getInventory();
+                if (std::cin.fail() || sellChoice < 1 || sellChoice > (int)inv.size()) {
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    std::cout << "Invalid item number." << '\n';
+                    break;
+                }
+                Item* itemToSell = inv[sellChoice - 1];
+                player.addGold(itemToSell->getValue());
+                std::cout << "You sold " << itemToSell->getName() << " for " << itemToSell->getValue() << " gold." << '\n';
+                removeItemFromInventory(const_cast<std::vector<Item*>&>(player.getInventory()));
+                break;
+            }
+            case 3:
+                std::cout << "Merchant: Safe travels, adventurer!" << '\n';
+                break;
+        }
+    }
+    // Clean up remaining merchant items
+    for (Item* item : merchantInventory) {
+        delete item;
+    }
+}
+
 
 void printCharacterInformation(const Player& player) {
     std::cout << "Character Information:" << '\n';
