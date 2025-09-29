@@ -12,7 +12,8 @@ enum ItemType {
     WEAPON,
     ARMOR,
     POTION,
-    MISC
+    CURRENCY, // e.g., gold, gems
+    MISC // e.g., quest items, can't be equipped or used
 };
 
 enum PotionType {
