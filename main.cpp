@@ -41,7 +41,7 @@ void triggerRandomEvent(Player& player) {
     } else if (roll <= enemyPercentage + chestPercentage) {
         // Spawn a chest
     } else if (roll <= enemyPercentage + chestPercentage + merchantPercentage) {
-        // Spawn a merchant
+        spawnMerchant(player);
     }
 }
 
