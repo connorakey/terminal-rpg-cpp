@@ -51,6 +51,10 @@ public:
 
     void removeWeight(unsigned int amount);
 
+    void addItemToInventory(Item* item);
+
+    bool pickupItem(Item* item);
+
     int getHealth() const;
 
     unsigned int getMaxHealth() const;

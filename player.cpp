@@ -1,5 +1,6 @@
 #include "player.hpp"
 #include <algorithm>
+#include <iostream>
 
 Player::Player(const std::string& name,
            int health,
@@ -89,6 +90,37 @@ void Player::addWeight(unsigned int amount) {
 void Player::removeWeight(unsigned int amount) {
     if (amount > totalWeight) totalWeight = 0;
     else totalWeight -= amount;
+}
+
+bool Player::pickupItem(Item* item) {
+    if (!item) return false;
+
+    // Special handling for currency items
+    if (item->getType() == CURRENCY) {
+        // Add gold value to player's gold
+        addGold(item->getValue());
+        std::cout << "Picked up " << item->getName() << " and gained " << item->getValue() << " gold!" << std::endl;
+        std::cout << "Current gold: " << gold << std::endl;
+
+        // Currency items are used up immediately, so we delete the item.
+        delete item;
+        return true;
+    } else {
+        // Regular items are added to inventory
+        addItemToInventory(item);
+        std::cout << "Picked up " << item->getName() << " and added it to inventory." << std::endl;
+        return true;
+    }
+}
+
+void Player::addItemToInventory(Item* item) {
+    if (!item) return;
+
+    // Add weight to player
+    addWeight(item->getWeight());
+
+    // Add item to inventory
+    inventory.push_back(item);
 }
 
 int Player::getHealth() const { return health; }
