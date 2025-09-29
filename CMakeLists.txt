@@ -15,4 +15,5 @@ add_executable(terminal_rpg main.cpp
         item.cpp
         itemdatabase.cpp
         itemdatabase.cpp
+        enemydatabase.cpp
 )
