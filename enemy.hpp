@@ -9,7 +9,7 @@
 
 class Enemy {
 public:
-    Enemy(const std::string &name, const std::string &description, int health, int minAttack, int maxAttack, int defence, int resistance);
+    Enemy(const std::string &name, const std::string &description, int level, int health, int minAttack, int maxAttack, int defence, int resistance);
 
     bool isAlive() const;
     void takeDamage(int damage);
@@ -23,6 +23,8 @@ public:
     int getMinAttack() const;
     int getMaxAttack() const;
     int getDefence() const;
+    int getResistance() const;
+    int getLevel() const;
 
 private:
     std::string name;

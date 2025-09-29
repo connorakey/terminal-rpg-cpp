@@ -55,3 +55,11 @@ int Enemy::getDefence() const {
     return defence;
 }
 
+int Enemy::getResistance() const {
+    return resistance;
+}
+
+int Enemy::getLevel() const {
+    return level;
+}
+
