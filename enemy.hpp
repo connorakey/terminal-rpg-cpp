@@ -29,6 +29,7 @@ public:
 private:
     std::string name;
     std::string description;
+    int level;
     int health;
     int minAttack;
     int maxAttack;
