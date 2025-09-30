@@ -362,8 +362,30 @@ void fightEnemy(Player& player, Enemy* enemy) {
                 std::cout << "Choose an item to use:" << '\n';
                 for (size_t i = 0; i < usableItems.size(); ++i) {
                     const PotionData& potionData = usableItems[i]->getPotionData();
-                    std::cout << i + 1 << ". " << usableItems[i]->getName()
-                              << " (Restores " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " HP)" << '\n';
+                    std::cout << i + 1 << ". " << usableItems[i]->getName();
+
+                    // Display potion effect based on type
+                    switch (potionData.getPotionType()) {
+                        case HEALING:
+                            std::cout << " (Restores " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " HP)";
+                            break;
+                        case STAMINA:
+                            std::cout << " (Restores " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " Stamina)";
+                            break;
+                        case DAMAGE:
+                            std::cout << " (Increases damage by " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " for this fight)";
+                            break;
+                        case DEFENSE:
+                            std::cout << " (Increases defense by " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " for this fight)";
+                            break;
+                        case RESISTENCE:
+                            std::cout << " (Increases resistance by " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " for this fight)";
+                            break;
+                        case POISON:
+                            std::cout << " (Deals " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " poison damage to enemy)";
+                            break;
+                    }
+                    std::cout << '\n';
                 }
                 std::cout << "0. Cancel" << '\n';
 
@@ -377,15 +399,35 @@ void fightEnemy(Player& player, Enemy* enemy) {
 
                 Item* chosenItem = usableItems[itemChoice - 1];
                 const PotionData& potionData = chosenItem->getPotionData();
+                int potionEffect = generateRandomNumber(potionData.getMinPotency(), potionData.getMaxPotency());
 
-                if (potionData.getPotionType() == HEALING) {
-                    int healAmount = generateRandomNumber(potionData.getMinPotency(), potionData.getMaxPotency());
-                    player.heal(healAmount);
-                    std::cout << "You use " << chosenItem->getName() << " and recover " << healAmount << " health!" << '\n';
-                } else {
-                    std::cout << "This item can't be used in combat!" << '\n';
-                    playerActed = false;
-                    break;
+                switch (potionData.getPotionType()) {
+                    case HEALING:
+                        player.heal(potionEffect);
+                        std::cout << "You use " << chosenItem->getName() << " and recover " << potionEffect << " health!" << '\n';
+                        break;
+                    case STAMINA:
+                        player.recoverStamina(potionEffect);
+                        std::cout << "You use " << chosenItem->getName() << " and recover " << potionEffect << " stamina!" << '\n';
+                        break;
+                    case DAMAGE:
+                        // Note: This would require a temporary damage boost system
+                        std::cout << "You use " << chosenItem->getName() << " and feel your strength surge! (+" << potionEffect << " damage this fight)" << '\n';
+                        std::cout << "Note: Damage boost system not yet implemented - potion consumed but no effect applied." << '\n';
+                        break;
+                    case DEFENSE:
+                        player.changeDefence(potionEffect);
+                        std::cout << "You use " << chosenItem->getName() << " and feel more protected! (+" << potionEffect << " defense)" << '\n';
+                        break;
+                    case RESISTENCE:
+                        player.changeResistance(potionEffect);
+                        std::cout << "You use " << chosenItem->getName() << " and feel more resistant to magic! (+" << potionEffect << " resistance)" << '\n';
+                        break;
+                    case POISON:
+                        enemy->takeDamage(potionEffect);
+                        std::cout << "You use " << chosenItem->getName() << " and throw it at the " << enemy->getName() << "!" << '\n';
+                        std::cout << "The poison deals " << potionEffect << " damage to the enemy!" << '\n';
+                        break;
                 }
 
                 // Remove used item from inventory
