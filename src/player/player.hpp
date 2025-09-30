@@ -6,7 +6,7 @@
 #define TERMINAL_RPG_PLAYER_HPP
 #include <string>
 #include <vector>
-#include "item.hpp"
+#include "../items/item.hpp"
 
 class Player {
 public:

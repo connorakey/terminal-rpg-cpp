@@ -4,7 +4,7 @@
 
 #ifndef TERMINAL_RPG_CHEST_HPP
 #define TERMINAL_RPG_CHEST_HPP
-#include "item.hpp"
+#include "../items/item.hpp"
 #include <random>
 
 enum openResult {

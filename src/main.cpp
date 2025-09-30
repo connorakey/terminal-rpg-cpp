@@ -5,11 +5,12 @@
 #include <vector>
 #include <cstdlib>
 #include <algorithm>
-#include "player.hpp"
-#include "itemdatabase.hpp"
-#include "enemydatabase.hpp"
-#include "leveldatabase.hpp"
-#include "chest.hpp"
+#include "player/player.hpp"
+#include "items/item.hpp"
+#include "items/itemdatabase.hpp"
+#include "enemies/enemydatabase.hpp"
+#include "levels/leveldatabase.hpp"
+#include "chest/chest.hpp"
 
 // Function declarations
 void triggerRandomEvent(Player& player);
