@@ -580,7 +580,10 @@ void spawnChest(Player& player) {
                         player.takeDamage(result.trapInfo.damage);
                         if (result.trapInfo.summonsEnemies) {
                             std::cout << "The explosion attracts nearby enemies!" << '\n';
-                            // TODO: Implement enemy summoning logic
+                                Enemy* enemy = spawnEnemy(player);
+                                if (enemy) {
+                                    fightEnemy(player, enemy);
+                                }
                         }
                         break;
 
@@ -588,7 +591,10 @@ void spawnChest(Player& player) {
                         std::cout << "An alarm goes off, alerting nearby creatures!" << '\n';
                         if (result.trapInfo.summonsEnemies) {
                             std::cout << "Enemies are approaching!" << '\n';
-                            // TODO: Implement enemy summoning logic
+                            Enemy* enemy = spawnEnemy(player);
+                            if (enemy) {
+                                fightEnemy(player, enemy);
+                            }
                         }
                         break;
 
