@@ -47,8 +47,10 @@ target_include_directories(terminal_rpg PRIVATE
 # Add test executables
 add_executable(tests
     tests/test_chest.cpp
+    tests/test_enemy.cpp
     src/chest/chest.cpp
     src/items/item.cpp
+    src/enemies/enemy.cpp
 )
 
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
