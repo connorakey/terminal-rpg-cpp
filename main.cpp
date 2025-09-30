@@ -225,6 +225,7 @@ void fightEnemy(Player& player, Enemy* enemy) {
                             if (currentDurability - 1 <= 0) {
                                 std::cout << "Your " << equippedWeapon->getName() << " breaks from overuse!" << '\n';
                                 equippedWeapon->setEquipped(false);
+                                player.setEquippedWeapon(nullptr);  // Clear the equipped weapon pointer
                                 // Remove broken weapon from inventory
                                 auto& inv = const_cast<std::vector<Item*>&>(player.getInventory());
                                 auto it = std::find(inv.begin(), inv.end(), equippedWeapon);
@@ -311,6 +312,7 @@ void fightEnemy(Player& player, Enemy* enemy) {
                             if (currentDurability - durabilityLoss <= 0) {
                                 std::cout << "Your " << equippedWeapon->getName() << " breaks from the intense power attack!" << '\n';
                                 equippedWeapon->setEquipped(false);
+                                player.setEquippedWeapon(nullptr);  // Clear the equipped weapon pointer
                                 // Remove broken weapon from inventory
                                 auto& inv = const_cast<std::vector<Item*>&>(player.getInventory());
                                 auto it = std::find(inv.begin(), inv.end(), equippedWeapon);
@@ -945,6 +947,7 @@ bool equipWeapon(Player& player) {
 
     // Equip the new weapon
     chosenWeapon->setEquipped(true);
+    player.setEquippedWeapon(chosenWeapon);  // Update the player's equipped weapon pointer
     std::cout << "Equipped " << chosenWeapon->getName() << "!" << '\n';
 
     return true;
