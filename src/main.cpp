@@ -795,7 +795,10 @@ void spawnMerchant(Player& player) {
                 Item* itemToSell = inv[sellChoice - 1];
                 player.addGold(itemToSell->getValue());
                 std::cout << "You sold " << itemToSell->getName() << " for " << itemToSell->getValue() << " gold." << '\n';
-                removeItemFromInventory(const_cast<std::vector<Item*>&>(player.getInventory()));
+
+                auto& mutableInv = const_cast<std::vector<Item*>&>(player.getInventory());
+                mutableInv.erase(mutableInv.begin() + (sellChoice - 1));
+                delete itemToSell;
                 break;
             }
             case 3:
