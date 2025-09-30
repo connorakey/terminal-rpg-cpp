@@ -472,6 +472,11 @@ void fightEnemy(Player& player, Enemy* enemy) {
 
         if (player.getHealth() <= 0) {
             std::cout << '\n' << "You have been defeated!" << '\n';
+            std::cout << "Final Stats: " << '\n';
+            printCharacterInformation(player);
+            std::cout << "Final Inventory: " << '\n';
+            printInventory(player.getInventory());
+            std::cout << '\n' << '\n';
             std::cout << "Game Over!" << '\n';
             delete enemy;
             exit(0);
