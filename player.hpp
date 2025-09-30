@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include "item.hpp"
+
 class Player {
 public:
     Player(const std::string& name,
@@ -55,6 +56,13 @@ public:
 
     bool pickupItem(Item* item);
 
+    // Leveling methods
+    void gainExperience(unsigned int amount);
+    bool checkAndLevelUp();
+    void updateStatsForLevel();
+    void setEquippedWeapon(Item* weapon);
+    void setEquippedArmor(Item* armor);
+
     int getHealth() const;
 
     unsigned int getMaxHealth() const;
@@ -99,5 +107,11 @@ private:
     std::vector<Item*> inventory;
     Item* equippedWeapon;
     Item* equippedArmor;
+
+    // Base stats (without level bonuses)
+    unsigned int baseMaxHealth;
+    unsigned int baseMaxStamina;
+    unsigned int baseDefence;
+    unsigned int baseResistance;
 };
 #endif //TERMINAL_RPG_PLAYER_HPP

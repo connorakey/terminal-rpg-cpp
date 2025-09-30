@@ -1,4 +1,5 @@
 #include "player.hpp"
+#include "leveldatabase.hpp"
 #include <algorithm>
 #include <iostream>
 
@@ -19,7 +20,12 @@ Player::Player(const std::string& name,
            std::vector<Item*> inventory)
     : name(name), health(health), maxHealth(maxHealth), stamina(stamina), maxStamina(maxStamina),
       defence(defence), resistance(resistance), level(level), experience(experience), gold(gold), nextLevelExp(nextLevelExp),
-      totalWeight(totalWeight), inventory(inventory), equippedWeapon(equippedWeapon), equippedArmor(equippedArmor) {}
+      totalWeight(totalWeight), inventory(inventory), equippedWeapon(equippedWeapon), equippedArmor(equippedArmor),
+      baseMaxHealth(100), baseMaxStamina(50), baseDefence(0), baseResistance(0) {
+
+    // Update stats based on current level
+    updateStatsForLevel();
+}
 
 void Player::takeDamage(unsigned int damage) {
     int actualDamage = static_cast<int>(damage) - static_cast<int>(defence);
@@ -121,6 +127,66 @@ void Player::addItemToInventory(Item* item) {
 
     // Add item to inventory
     inventory.push_back(item);
+}
+
+void Player::gainExperience(unsigned int amount) {
+    experience += amount;
+    std::cout << "Gained " << amount << " experience!" << std::endl;
+
+    // Check for level up
+    if (checkAndLevelUp()) {
+        std::cout << "Level up! You are now level " << level << "!" << std::endl;
+        updateStatsForLevel();
+
+        // Show level progression info
+        std::cout << LevelDatabase::getInstance().getLevelProgressionInfo(level, experience) << std::endl;
+    }
+
+    // Update next level experience
+    nextLevelExp = LevelDatabase::getInstance().getExperienceForNextLevel(level);
+}
+
+bool Player::checkAndLevelUp() {
+    int newLevel = LevelDatabase::getInstance().checkLevelUp(experience, level);
+    if (newLevel > static_cast<int>(level)) {
+        level = newLevel;
+        return true;
+    }
+    return false;
+}
+
+void Player::updateStatsForLevel() {
+    // Get stat bonuses from level database
+    unsigned int healthBonus, staminaBonus, defenceBonus, resistanceBonus;
+    LevelDatabase::getInstance().getStatBonuses(level, healthBonus, staminaBonus, defenceBonus, resistanceBonus);
+
+    // Update max stats with bonuses
+    unsigned int oldMaxHealth = maxHealth;
+    unsigned int oldMaxStamina = maxStamina;
+
+    maxHealth = baseMaxHealth + healthBonus;
+    maxStamina = baseMaxStamina + staminaBonus;
+    defence = baseDefence + defenceBonus;
+    resistance = baseResistance + resistanceBonus;
+
+    // Heal proportionally when max health/stamina increases
+    if (maxHealth > oldMaxHealth) {
+        heal(maxHealth - oldMaxHealth);
+    }
+    if (maxStamina > oldMaxStamina) {
+        recoverStamina(maxStamina - oldMaxStamina);
+    }
+
+    // Update next level experience requirement
+    nextLevelExp = LevelDatabase::getInstance().getExperienceForNextLevel(level);
+}
+
+void Player::setEquippedWeapon(Item* weapon) {
+    equippedWeapon = weapon;
+}
+
+void Player::setEquippedArmor(Item* armor) {
+    equippedArmor = armor;
 }
 
 int Player::getHealth() const { return health; }
