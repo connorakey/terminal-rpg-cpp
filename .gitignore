@@ -1,6 +1,7 @@
 # Ignore build directories
 cmake-build-debug/
 cmake-build-release/
+build/
 
 # Ignore JetBrains IDE/project files
 .idea/
