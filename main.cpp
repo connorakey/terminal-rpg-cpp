@@ -8,6 +8,7 @@
 #include "player.hpp"
 #include "itemdatabase.hpp"
 #include "enemydatabase.hpp"
+#include "leveldatabase.hpp"
 #include "chest.hpp"
 
 // Function declarations
@@ -23,22 +24,33 @@ bool equipWeapon(Player& player); // Returns true if a weapon was equipped, fals
 int generateRandomNumber(int min, int max);
 
 int main() {
-    std::cout << "------ Terminal RPG ------" << '\n';
+    std::cout << "-------- Terminal RPG --------" << '\n';
 
     // Initialize the databases
     ItemDatabase::getInstance().initialize();
     EnemyDatabase::getInstance().initialize();
+    LevelDatabase::getInstance().initialize();
 
     std::cout << "Creating player..." << '\n';
     std::cout << "Enter your character's name: ";
     std::string playerName;
     std::getline(std::cin, playerName);
-    Player player(playerName, 100, 100, 25, 25, 0, 0, 1, 0, 100, 100, 0);
+    Player player(playerName, 100, 100, 50, 50, 0, 0, 1, 0, 100, 100, 0);
     std::cout << "Welcome, " << playerName << "!" << '\n' << '\n';
     printCharacterInformation(player);
-    Enemy* enemy = spawnEnemy(player);
-    if (enemy) {
-        fightEnemy(player, enemy);
+
+    while (true) {
+        triggerRandomEvent(player);
+
+        std::cout << "\nContinue adventuring? (y/n): ";
+        char continueChoice;
+        std::cin >> continueChoice;
+        std::cin.ignore();
+
+        if (continueChoice == 'n' || continueChoice == 'N') {
+            std::cout << "Thanks for playing!" << std::endl;
+            break;
+        }
     }
 
     return 0;
@@ -797,7 +809,7 @@ void printCharacterInformation(const Player& player) {
     std::cout << "Defence: " << player.getDefence() << '\n';
     std::cout << "Resistance: " << player.getResistance() << '\n';
     std::cout << "Gold: " << player.getGold() << '\n';
-    std::cout << "Level: " << player.getLevel() << '\n';
+    std::cout << "Level: " << player.getLevel() << " (" << LevelDatabase::getInstance().getLevelTitle(player.getLevel()) << ")" << '\n';
     std::cout << "Experience: " << player.getExperience() << '\n';
     std::cout << "Next Level Exp: " << player.getNextLevelExp() << '\n';
 }
