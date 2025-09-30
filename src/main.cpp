@@ -26,6 +26,7 @@ int generateRandomNumber(int min, int max);
 
 int main() {
     std::cout << "-------- Terminal RPG --------" << '\n';
+    std::cout << "Version: 1.0.0" << '\n';
 
     // Initialize the databases
     ItemDatabase::getInstance().initialize();
