@@ -14,7 +14,6 @@ add_executable(terminal_rpg src/main.cpp
         src/chest/chest.cpp
         src/items/item.cpp
         src/items/itemdatabase.cpp
-        src/items/itemdatabase.cpp
         src/enemies/enemydatabase.cpp
         src/levels/leveldatabase.hpp
         src/levels/leveldatabase.cpp
