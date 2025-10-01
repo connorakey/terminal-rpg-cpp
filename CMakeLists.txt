@@ -56,6 +56,7 @@ add_executable(tests
         tests/test_item.cpp
         tests/test_player.cpp
         tests/test_player.cpp
+        tests/test_leveldatabase.cpp
 )
 
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
