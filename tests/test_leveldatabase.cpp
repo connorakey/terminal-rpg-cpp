@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include "../src/levels/leveldatabase.hpp"
+#include <climits>
 
 TEST_CASE("LevelDatabase singleton pattern works correctly", "[LevelDatabase]") {
     LevelDatabase& db1 = LevelDatabase::getInstance();
