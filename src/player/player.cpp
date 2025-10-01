@@ -1,29 +1,34 @@
 #include "player.hpp"
-#include "../levels/leveldatabase.hpp"
+
 #include <algorithm>
 #include <iostream>
 
-Player::Player(const std::string& name,
-           int health,
-           unsigned int maxHealth,
-           unsigned int stamina,
-           unsigned int maxStamina,
-           unsigned int defence,
-           unsigned int resistance,
-           unsigned int level,
-           unsigned int experience,
-           unsigned int gold,
-           unsigned int nextLevelExp,
-           unsigned int totalWeight,
-           Item* equippedWeapon,
-           Item* equippedArmor,
-           std::vector<Item*> inventory)
-    : name(name), health(health), maxHealth(maxHealth), stamina(stamina), maxStamina(maxStamina),
-      defence(defence), resistance(resistance), level(level), experience(experience), gold(gold), nextLevelExp(nextLevelExp),
-      totalWeight(totalWeight), inventory(inventory), equippedWeapon(equippedWeapon), equippedArmor(equippedArmor),
-      baseMaxHealth(maxHealth), baseMaxStamina(maxStamina), baseDefence(defence), baseResistance(resistance) {
+#include "../levels/leveldatabase.hpp"
 
-}
+Player::Player(const std::string& name, int health, unsigned int maxHealth, unsigned int stamina,
+               unsigned int maxStamina, unsigned int defence, unsigned int resistance,
+               unsigned int level, unsigned int experience, unsigned int gold,
+               unsigned int nextLevelExp, unsigned int totalWeight, Item* equippedWeapon,
+               Item* equippedArmor, std::vector<Item*> inventory)
+    : name(name),
+      health(health),
+      maxHealth(maxHealth),
+      stamina(stamina),
+      maxStamina(maxStamina),
+      defence(defence),
+      resistance(resistance),
+      level(level),
+      experience(experience),
+      gold(gold),
+      nextLevelExp(nextLevelExp),
+      totalWeight(totalWeight),
+      inventory(inventory),
+      equippedWeapon(equippedWeapon),
+      equippedArmor(equippedArmor),
+      baseMaxHealth(maxHealth),
+      baseMaxStamina(maxStamina),
+      baseDefence(defence),
+      baseResistance(resistance) {}
 
 void Player::takeDamage(unsigned int damage) {
     int actualDamage = static_cast<int>(damage) - static_cast<int>(defence);
@@ -68,30 +73,26 @@ void Player::changeMaxStamina(signed int amount) {
     if (stamina > maxStamina) stamina = maxStamina;
 }
 
-void Player::changeDefence(signed int amount) {
-    defence += amount;
-}
+void Player::changeDefence(signed int amount) { defence += amount; }
 
-void Player::changeResistance(signed int amount) {
-    resistance += amount;
-}
+void Player::changeResistance(signed int amount) { resistance += amount; }
 
-void Player::addGold(unsigned int amount) {
-    gold += amount;
-}
+void Player::addGold(unsigned int amount) { gold += amount; }
 
 void Player::removeGold(unsigned int amount) {
-    if (amount > gold) gold = 0;
-    else gold -= amount;
+    if (amount > gold)
+        gold = 0;
+    else
+        gold -= amount;
 }
 
-void Player::addWeight(unsigned int amount) {
-    totalWeight += amount;
-}
+void Player::addWeight(unsigned int amount) { totalWeight += amount; }
 
 void Player::removeWeight(unsigned int amount) {
-    if (amount > totalWeight) totalWeight = 0;
-    else totalWeight -= amount;
+    if (amount > totalWeight)
+        totalWeight = 0;
+    else
+        totalWeight -= amount;
 }
 
 bool Player::pickupItem(Item* item) {
@@ -101,7 +102,8 @@ bool Player::pickupItem(Item* item) {
     if (item->getType() == CURRENCY) {
         // Add gold value to player's gold
         addGold(item->getValue());
-        std::cout << "Picked up " << item->getName() << " and gained " << item->getValue() << " gold!" << std::endl;
+        std::cout << "Picked up " << item->getName() << " and gained " << item->getValue()
+                  << " gold!" << std::endl;
         std::cout << "Current gold: " << gold << std::endl;
 
         // Currency items are used up immediately, so we delete the item.
@@ -141,7 +143,8 @@ void Player::gainExperience(unsigned int amount) {
         updateStatsForLevel();
 
         // Show level progression info
-        std::cout << LevelDatabase::getInstance().getLevelProgressionInfo(level, experience) << std::endl;
+        std::cout << LevelDatabase::getInstance().getLevelProgressionInfo(level, experience)
+                  << std::endl;
     }
 
     // Update next level experience
@@ -160,7 +163,8 @@ bool Player::checkAndLevelUp() {
 void Player::updateStatsForLevel() {
     // Get stat bonuses from level database
     unsigned int healthBonus, staminaBonus, defenceBonus, resistanceBonus;
-    LevelDatabase::getInstance().getStatBonuses(level, healthBonus, staminaBonus, defenceBonus, resistanceBonus);
+    LevelDatabase::getInstance().getStatBonuses(level, healthBonus, staminaBonus, defenceBonus,
+                                                resistanceBonus);
 
     // Update max stats with bonuses
     unsigned int oldMaxHealth = maxHealth;
@@ -183,13 +187,9 @@ void Player::updateStatsForLevel() {
     nextLevelExp = LevelDatabase::getInstance().getExperienceForNextLevel(level);
 }
 
-void Player::setEquippedWeapon(Item* weapon) {
-    equippedWeapon = weapon;
-}
+void Player::setEquippedWeapon(Item* weapon) { equippedWeapon = weapon; }
 
-void Player::setEquippedArmor(Item* armor) {
-    equippedArmor = armor;
-}
+void Player::setEquippedArmor(Item* armor) { equippedArmor = armor; }
 
 int Player::getHealth() const { return health; }
 unsigned int Player::getMaxHealth() const { return maxHealth; }
@@ -197,11 +197,11 @@ unsigned int Player::getStamina() const { return stamina; }
 unsigned int Player::getMaxStamina() const { return maxStamina; }
 unsigned int Player::getDefence() const { return defence; }
 unsigned int Player::getResistance() const { return resistance; }
-const std::string &Player::getName() const { return name; }
+const std::string& Player::getName() const { return name; }
 unsigned int Player::getLevel() const { return level; }
 unsigned int Player::getExperience() const { return experience; }
 unsigned int Player::getGold() const { return gold; }
 unsigned int Player::getNextLevelExp() const { return nextLevelExp; }
-const std::vector<Item*> &Player::getInventory() const { return inventory; }
+const std::vector<Item*>& Player::getInventory() const { return inventory; }
 Item* Player::getEquippedWeapon() const { return equippedWeapon; }
 Item* Player::getEquippedArmor() const { return equippedArmor; }

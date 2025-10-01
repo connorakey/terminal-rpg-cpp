@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+
 #include "../src/items/item.hpp"
 
 TEST_CASE("Item default constructor initializes members correctly", "[Item]") {

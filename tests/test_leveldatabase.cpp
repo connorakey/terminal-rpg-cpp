@@ -1,12 +1,13 @@
 #include <catch2/catch_test_macros.hpp>
-#include "../src/levels/leveldatabase.hpp"
 #include <climits>
+
+#include "../src/levels/leveldatabase.hpp"
 
 TEST_CASE("LevelDatabase singleton pattern works correctly", "[LevelDatabase]") {
     LevelDatabase& db1 = LevelDatabase::getInstance();
     LevelDatabase& db2 = LevelDatabase::getInstance();
 
-    REQUIRE(&db1 == &db2); // Same instance
+    REQUIRE(&db1 == &db2);  // Same instance
 }
 
 TEST_CASE("LevelDatabase initializes and retrieves level templates correctly", "[LevelDatabase]") {
@@ -114,8 +115,8 @@ TEST_CASE("LevelDatabase getExperienceForLevel works correctly", "[LevelDatabase
     REQUIRE(db.getExperienceForLevel(1) == 0);
     REQUIRE(db.getExperienceForLevel(2) == 100);
     REQUIRE(db.getExperienceForLevel(10) == 4100);
-    REQUIRE(db.getExperienceForLevel(0) == 0); // Invalid level
-    REQUIRE(db.getExperienceForLevel(101) == 0); // Invalid level
+    REQUIRE(db.getExperienceForLevel(0) == 0);    // Invalid level
+    REQUIRE(db.getExperienceForLevel(101) == 0);  // Invalid level
 }
 
 TEST_CASE("LevelDatabase getLevelFromExperience works correctly", "[LevelDatabase]") {
@@ -128,8 +129,10 @@ TEST_CASE("LevelDatabase getLevelFromExperience works correctly", "[LevelDatabas
     REQUIRE(db.getLevelFromExperience(250) == 3);
     REQUIRE(db.getLevelFromExperience(4100) == 10);
     // The experience requirements grow exponentially
-    REQUIRE(db.getLevelFromExperience(10000000) >= 85); // Should reach a high level (actually reaches 87)
-    REQUIRE(db.getLevelFromExperience(UINT_MAX) == 100); // Maximum possible experience should reach max level
+    REQUIRE(db.getLevelFromExperience(10000000) >=
+            85);  // Should reach a high level (actually reaches 87)
+    REQUIRE(db.getLevelFromExperience(UINT_MAX) ==
+            100);  // Maximum possible experience should reach max level
 }
 
 TEST_CASE("LevelDatabase getExperienceForNextLevel works correctly", "[LevelDatabase]") {
@@ -139,8 +142,8 @@ TEST_CASE("LevelDatabase getExperienceForNextLevel works correctly", "[LevelData
     REQUIRE(db.getExperienceForNextLevel(1) == 100);
     REQUIRE(db.getExperienceForNextLevel(2) == 250);
     REQUIRE(db.getExperienceForNextLevel(9) == 4100);
-    REQUIRE(db.getExperienceForNextLevel(100) == 0); // Max level
-    REQUIRE(db.getExperienceForNextLevel(101) == 0); // Above max level
+    REQUIRE(db.getExperienceForNextLevel(100) == 0);  // Max level
+    REQUIRE(db.getExperienceForNextLevel(101) == 0);  // Above max level
 }
 
 TEST_CASE("LevelDatabase calculateExperienceReward works correctly", "[LevelDatabase]") {
@@ -161,14 +164,14 @@ TEST_CASE("LevelDatabase calculateExperienceReward works correctly", "[LevelData
 
     // Boss should give 5x more experience
     int bossReward = db.calculateExperienceReward(5, 5, true);
-    REQUIRE(bossReward > baseReward * 4); // Should be roughly 5x
+    REQUIRE(bossReward > baseReward * 4);  // Should be roughly 5x
 
     // Test extreme cases
     int veryLowReward = db.calculateExperienceReward(50, 1, false);
-    REQUIRE(veryLowReward >= 1); // Should be at minimum
+    REQUIRE(veryLowReward >= 1);  // Should be at minimum
 
     int veryHighReward = db.calculateExperienceReward(1, 50, false);
-    REQUIRE(veryHighReward <= 1000); // Should be capped at maximum
+    REQUIRE(veryHighReward <= 1000);  // Should be capped at maximum
 }
 
 TEST_CASE("LevelDatabase getLevelProgressionInfo works correctly", "[LevelDatabase]") {
@@ -233,10 +236,10 @@ TEST_CASE("LevelDatabase getStatBonuses works correctly", "[LevelDatabase]") {
 
     // Level 3 should have cumulative bonuses from levels 2 and 3
     db.getStatBonuses(3, health, stamina, defence, resistance);
-    REQUIRE(health == 35); // 15 + 20
-    REQUIRE(stamina == 13); // 5 + 8
-    REQUIRE(defence == 2); // 1 + 1
-    REQUIRE(resistance == 1); // 0 + 1
+    REQUIRE(health == 35);     // 15 + 20
+    REQUIRE(stamina == 13);    // 5 + 8
+    REQUIRE(defence == 2);     // 1 + 1
+    REQUIRE(resistance == 1);  // 0 + 1
 
     // Test invalid level
     db.getStatBonuses(0, health, stamina, defence, resistance);
@@ -290,8 +293,7 @@ TEST_CASE("LevelTemplate constructor works correctly", "[LevelTemplate]") {
     REQUIRE(template1.resistanceMultiplier == 1.0);
 
     // Test with custom multipliers
-    LevelTemplate template2(10, 1000, 4100, 60, 30, 5, 4, "Elite Warrior",
-                           1.2, 1.1, 1.1, 1.1);
+    LevelTemplate template2(10, 1000, 4100, 60, 30, 5, 4, "Elite Warrior", 1.2, 1.1, 1.1, 1.1);
 
     REQUIRE(template2.healthMultiplier == 1.2);
     REQUIRE(template2.staminaMultiplier == 1.1);
@@ -331,17 +333,17 @@ TEST_CASE("LevelDatabase experience calculation boundary conditions", "[LevelDat
 
     // Test experience reward minimum and maximum bounds
     int minReward = db.calculateExperienceReward(100, 1, false);
-    REQUIRE(minReward >= 1); // Should be at minimum
+    REQUIRE(minReward >= 1);  // Should be at minimum
 
     int maxReward = db.calculateExperienceReward(1, 100, true);
-    REQUIRE(maxReward <= 1000); // Should be at maximum
+    REQUIRE(maxReward <= 1000);  // Should be at maximum
 
     // Test level difference multiplier extremes
     int negativeDiff = db.calculateExperienceReward(50, 10, false);
-    REQUIRE(negativeDiff > 0); // Should still be positive
+    REQUIRE(negativeDiff > 0);  // Should still be positive
 
     int positiveDiff = db.calculateExperienceReward(10, 50, false);
-    REQUIRE(positiveDiff > negativeDiff); // Higher level enemy gives more exp
+    REQUIRE(positiveDiff > negativeDiff);  // Higher level enemy gives more exp
 }
 
 TEST_CASE("LevelDatabase handles edge cases correctly", "[LevelDatabase]") {
@@ -350,7 +352,7 @@ TEST_CASE("LevelDatabase handles edge cases correctly", "[LevelDatabase]") {
 
     // Test very high experience values
     int levelFromHighExp = db.getLevelFromExperience(UINT_MAX);
-    REQUIRE(levelFromHighExp == 100); // Should cap at max level
+    REQUIRE(levelFromHighExp == 100);  // Should cap at max level
 
     // Test stat bonuses for high levels
     unsigned int health, stamina, defence, resistance;

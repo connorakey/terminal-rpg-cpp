@@ -1,4 +1,5 @@
 #include "chest.hpp"
+
 #include <random>
 
 Chest::Chest(bool isLocked, trap trapped, Item* item)
@@ -20,7 +21,7 @@ OpenChestResult Chest::open() {
     }
     if (trapped == EXPLOSION) {
         int damage = randomInt(30, 70);
-        bool summonsEnemies = randomChance(30); // >30 out of 100 summons enemies
+        bool summonsEnemies = randomChance(30);  // >30 out of 100 summons enemies
         return {TRAPPED, item, {EXPLOSION, damage, summonsEnemies}};
     }
     if (trapped == ALARM) {
@@ -30,9 +31,7 @@ OpenChestResult Chest::open() {
     return {EMPTY, nullptr, {NONE, 0, false}};
 }
 
-Item* Chest::getItem() const {
-    return item;
-}
+Item* Chest::getItem() const { return item; }
 
 int Chest::randomInt(int min, int max) {
     static std::random_device rd;
@@ -41,7 +40,4 @@ int Chest::randomInt(int min, int max) {
     return dist(gen);
 }
 
-bool Chest::randomChance(int threshold) {
-    return randomInt(1, 100) > threshold;
-}
-
+bool Chest::randomChance(int threshold) { return randomInt(1, 100) > threshold; }

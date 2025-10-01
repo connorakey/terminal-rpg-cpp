@@ -1,16 +1,17 @@
+#include <algorithm>
+#include <cstdlib>
 #include <iostream>
-#include <string>
 #include <limits>
 #include <random>
+#include <string>
 #include <vector>
-#include <cstdlib>
-#include <algorithm>
-#include "player/player.hpp"
+
+#include "chest/chest.hpp"
+#include "enemies/enemydatabase.hpp"
 #include "items/item.hpp"
 #include "items/itemdatabase.hpp"
-#include "enemies/enemydatabase.hpp"
 #include "levels/leveldatabase.hpp"
-#include "chest/chest.hpp"
+#include "player/player.hpp"
 
 // Function declarations
 void triggerRandomEvent(Player& player);
@@ -21,7 +22,7 @@ void spawnMerchant(Player& player);
 void printCharacterInformation(const Player& player);
 void printInventory(const std::vector<Item*>& inventory);
 void removeItemFromInventory(std::vector<Item*>& inventory);
-bool equipWeapon(Player& player); // Returns true if a weapon was equipped, false if cancelled
+bool equipWeapon(Player& player);  // Returns true if a weapon was equipped, false if cancelled
 int generateRandomNumber(int min, int max);
 
 int main() {
@@ -85,11 +86,12 @@ Enemy* spawnEnemy(Player& player) {
     int maxEnemyLevel = playerLevel + 2;
 
     // Get a random enemy within the level range
-    std::string enemyName = EnemyDatabase::getInstance().getRandomEnemyByLevel(minEnemyLevel, maxEnemyLevel);
+    std::string enemyName =
+        EnemyDatabase::getInstance().getRandomEnemyByLevel(minEnemyLevel, maxEnemyLevel);
 
     if (enemyName.empty()) {
         std::cout << "A goblin appears!" << '\n';
-        enemyName = "Goblin"; // Fallback enemy
+        enemyName = "Goblin";  // Fallback enemy
     }
 
     // Create the enemy
@@ -99,7 +101,8 @@ Enemy* spawnEnemy(Player& player) {
         return nullptr;
     }
 
-    std::cout << "A " << enemy->getName() << " (Level " << enemy->getLevel() << ") blocks your path!" << '\n';
+    std::cout << "A " << enemy->getName() << " (Level " << enemy->getLevel()
+              << ") blocks your path!" << '\n';
     std::cout << enemy->getDescription() << '\n';
     std::cout << "Enemy Stats:" << '\n';
     std::cout << "  Health: " << enemy->getHealth() << '\n';
@@ -168,7 +171,8 @@ void fightEnemy(Player& player, Enemy* enemy) {
     while (enemy->isAlive() && player.getHealth() > 0) {
         std::cout << '\n' << "=== COMBAT STATUS ===" << '\n';
         std::cout << "Your Health: " << player.getHealth() << "/" << player.getMaxHealth() << '\n';
-        std::cout << "Your Stamina: " << player.getStamina() << "/" << player.getMaxStamina() << '\n';
+        std::cout << "Your Stamina: " << player.getStamina() << "/" << player.getMaxStamina()
+                  << '\n';
         std::cout << enemy->getName() << " Health: " << enemy->getHealth() << '\n';
         std::cout << "--------------------------------" << '\n';
 
@@ -187,14 +191,14 @@ void fightEnemy(Player& player, Enemy* enemy) {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid choice! You fumble and lose your turn!" << '\n';
-            combatChoice = 0; // Skip player turn
+            combatChoice = 0;  // Skip player turn
         }
 
         bool playerDefending = false;
         bool playerActed = true;
 
         switch (combatChoice) {
-            case 1: { // Normal Attack
+            case 1: {  // Normal Attack
                 if (player.getStamina() < 5) {
                     std::cout << "You're too tired to attack effectively! (Need 5 stamina)" << '\n';
                     playerActed = false;
@@ -213,11 +217,14 @@ void fightEnemy(Player& player, Enemy* enemy) {
                     // Check accuracy - roll to see if attack hits
                     int accuracyRoll = generateRandomNumber(1, 100);
                     if (accuracyRoll > weaponData.getAccuracy()) {
-                        std::cout << "You miss with your " << equippedWeapon->getName() << "!" << '\n';
+                        std::cout << "You miss with your " << equippedWeapon->getName() << "!"
+                                  << '\n';
                         playerDamage = 0;
                     } else {
-                        playerDamage = generateRandomNumber(weaponData.getMinDamage(), weaponData.getMaxDamage());
-                        std::cout << "You strike with your " << equippedWeapon->getName() << "!" << '\n';
+                        playerDamage = generateRandomNumber(weaponData.getMinDamage(),
+                                                            weaponData.getMaxDamage());
+                        std::cout << "You strike with your " << equippedWeapon->getName() << "!"
+                                  << '\n';
 
                         // Reduce weapon durability on successful hit
                         WeaponData& mutableWeaponData = const_cast<WeaponData&>(weaponData);
@@ -225,9 +232,11 @@ void fightEnemy(Player& player, Enemy* enemy) {
                         if (currentDurability > 0) {
                             mutableWeaponData.setDurability(currentDurability - 1);
                             if (currentDurability - 1 <= 0) {
-                                std::cout << "Your " << equippedWeapon->getName() << " breaks from overuse!" << '\n';
+                                std::cout << "Your " << equippedWeapon->getName()
+                                          << " breaks from overuse!" << '\n';
                                 equippedWeapon->setEquipped(false);
-                                player.setEquippedWeapon(nullptr);  // Clear the equipped weapon pointer
+                                player.setEquippedWeapon(
+                                    nullptr);  // Clear the equipped weapon pointer
                                 // Remove broken weapon from inventory
                                 auto& inv = const_cast<std::vector<Item*>&>(player.getInventory());
                                 auto it = std::find(inv.begin(), inv.end(), equippedWeapon);
@@ -236,7 +245,9 @@ void fightEnemy(Player& player, Enemy* enemy) {
                                     delete equippedWeapon;
                                 }
                             } else if (currentDurability - 1 <= 5) {
-                                std::cout << "Your " << equippedWeapon->getName() << " is getting worn out! (Durability: " << (currentDurability - 1) << ")" << '\n';
+                                std::cout << "Your " << equippedWeapon->getName()
+                                          << " is getting worn out! (Durability: "
+                                          << (currentDurability - 1) << ")" << '\n';
                             }
                         }
                     }
@@ -262,27 +273,31 @@ void fightEnemy(Player& player, Enemy* enemy) {
                 break;
             }
 
-            case 2: { // Defend
+            case 2: {  // Defend
                 std::cout << "You take a defensive stance!" << '\n';
                 playerDefending = true;
                 // Recover 30% of max stamina while defending
-                unsigned int staminaRecovery = static_cast<unsigned int>(player.getMaxStamina() * 0.3);
+                unsigned int staminaRecovery =
+                    static_cast<unsigned int>(player.getMaxStamina() * 0.3);
                 player.recoverStamina(staminaRecovery);
                 std::cout << "You recover stamina and prepare to block incoming attacks!" << '\n';
                 break;
             }
 
-            case 3: { // Power Attack (double damage, triple stamina, lower accuracy, double durability loss)
+            case 3: {  // Power Attack (double damage, triple stamina, lower accuracy, double
+                       // durability loss)
                 Item* equippedWeapon = player.getEquippedWeapon();
-                int requiredStamina = 15; // Default for unarmed
+                int requiredStamina = 15;  // Default for unarmed
 
                 if (equippedWeapon && equippedWeapon->getType() == WEAPON) {
                     const WeaponData& weaponData = equippedWeapon->getWeaponData();
-                    requiredStamina = weaponData.getStaminaCost() * 3; // Power attack costs 3x weapon stamina
+                    requiredStamina =
+                        weaponData.getStaminaCost() * 3;  // Power attack costs 3x weapon stamina
                 }
 
                 if (player.getStamina() < requiredStamina) {
-                    std::cout << "You don't have enough stamina for a power attack! (Need " << requiredStamina << " stamina)" << '\n';
+                    std::cout << "You don't have enough stamina for a power attack! (Need "
+                              << requiredStamina << " stamina)" << '\n';
                     playerActed = false;
                     break;
                 }
@@ -296,25 +311,34 @@ void fightEnemy(Player& player, Enemy* enemy) {
 
                     // Check accuracy for power attack (slightly reduced accuracy due to wild swing)
                     int accuracyRoll = generateRandomNumber(1, 100);
-                    int powerAttackAccuracy = weaponData.getAccuracy() - 10; // 10% accuracy penalty for power attacks
+                    int powerAttackAccuracy =
+                        weaponData.getAccuracy() - 10;  // 10% accuracy penalty for power attacks
                     if (accuracyRoll > powerAttackAccuracy) {
-                        std::cout << "You swing wildly and miss with your " << equippedWeapon->getName() << "!" << '\n';
+                        std::cout << "You swing wildly and miss with your "
+                                  << equippedWeapon->getName() << "!" << '\n';
                         playerDamage = 0;
                     } else {
-                        playerDamage = generateRandomNumber(weaponData.getMinDamage(), weaponData.getMaxDamage()) * 2;
-                        std::cout << "You unleash a devastating blow with your " << equippedWeapon->getName() << "!" << '\n';
+                        playerDamage = generateRandomNumber(weaponData.getMinDamage(),
+                                                            weaponData.getMaxDamage()) *
+                                       2;
+                        std::cout << "You unleash a devastating blow with your "
+                                  << equippedWeapon->getName() << "!" << '\n';
 
                         // Power attacks cause more durability damage (2 points instead of 1)
                         WeaponData& mutableWeaponData = const_cast<WeaponData&>(weaponData);
                         int currentDurability = mutableWeaponData.getDurability();
                         if (currentDurability > 0) {
-                            int durabilityLoss = std::min(2, currentDurability); // Lose 2 durability, but not more than current
+                            int durabilityLoss = std::min(
+                                2,
+                                currentDurability);  // Lose 2 durability, but not more than current
                             mutableWeaponData.setDurability(currentDurability - durabilityLoss);
 
                             if (currentDurability - durabilityLoss <= 0) {
-                                std::cout << "Your " << equippedWeapon->getName() << " breaks from the intense power attack!" << '\n';
+                                std::cout << "Your " << equippedWeapon->getName()
+                                          << " breaks from the intense power attack!" << '\n';
                                 equippedWeapon->setEquipped(false);
-                                player.setEquippedWeapon(nullptr);  // Clear the equipped weapon pointer
+                                player.setEquippedWeapon(
+                                    nullptr);  // Clear the equipped weapon pointer
                                 // Remove broken weapon from inventory
                                 auto& inv = const_cast<std::vector<Item*>&>(player.getInventory());
                                 auto it = std::find(inv.begin(), inv.end(), equippedWeapon);
@@ -323,13 +347,16 @@ void fightEnemy(Player& player, Enemy* enemy) {
                                     delete equippedWeapon;
                                 }
                             } else if (currentDurability - durabilityLoss <= 5) {
-                                std::cout << "Your " << equippedWeapon->getName() << " is severely damaged from the power attack! (Durability: " << (currentDurability - durabilityLoss) << ")" << '\n';
+                                std::cout
+                                    << "Your " << equippedWeapon->getName()
+                                    << " is severely damaged from the power attack! (Durability: "
+                                    << (currentDurability - durabilityLoss) << ")" << '\n';
                             }
                         }
                     }
                 } else {
                     // Unarmed power attack always hits low damage
-                    playerDamage = generateRandomNumber(6, 16); // Double base damage
+                    playerDamage = generateRandomNumber(6, 16);  // Double base damage
                     std::cout << "You put all your strength into a crushing blow!" << '\n';
                 }
 
@@ -342,7 +369,7 @@ void fightEnemy(Player& player, Enemy* enemy) {
                 break;
             }
 
-            case 4: { // Use Item
+            case 4: {  // Use Item
                 const std::vector<Item*>& inventory = player.getInventory();
                 std::vector<Item*> usableItems;
 
@@ -367,22 +394,28 @@ void fightEnemy(Player& player, Enemy* enemy) {
                     // Display potion effect based on type
                     switch (potionData.getPotionType()) {
                         case HEALING:
-                            std::cout << " (Restores " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " HP)";
+                            std::cout << " (Restores " << potionData.getMinPotency() << "-"
+                                      << potionData.getMaxPotency() << " HP)";
                             break;
                         case STAMINA:
-                            std::cout << " (Restores " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " Stamina)";
+                            std::cout << " (Restores " << potionData.getMinPotency() << "-"
+                                      << potionData.getMaxPotency() << " Stamina)";
                             break;
                         case DAMAGE:
-                            std::cout << " (Increases damage by " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " for this fight)";
+                            std::cout << " (Increases damage by " << potionData.getMinPotency()
+                                      << "-" << potionData.getMaxPotency() << " for this fight)";
                             break;
                         case DEFENSE:
-                            std::cout << " (Increases defense by " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " for this fight)";
+                            std::cout << " (Increases defense by " << potionData.getMinPotency()
+                                      << "-" << potionData.getMaxPotency() << " for this fight)";
                             break;
                         case RESISTENCE:
-                            std::cout << " (Increases resistance by " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " for this fight)";
+                            std::cout << " (Increases resistance by " << potionData.getMinPotency()
+                                      << "-" << potionData.getMaxPotency() << " for this fight)";
                             break;
                         case POISON:
-                            std::cout << " (Deals " << potionData.getMinPotency() << "-" << potionData.getMaxPotency() << " poison damage to enemy)";
+                            std::cout << " (Deals " << potionData.getMinPotency() << "-"
+                                      << potionData.getMaxPotency() << " poison damage to enemy)";
                             break;
                     }
                     std::cout << '\n';
@@ -391,7 +424,8 @@ void fightEnemy(Player& player, Enemy* enemy) {
 
                 int itemChoice;
                 std::cin >> itemChoice;
-                if (itemChoice == 0 || itemChoice < 0 || itemChoice > static_cast<int>(usableItems.size())) {
+                if (itemChoice == 0 || itemChoice < 0 ||
+                    itemChoice > static_cast<int>(usableItems.size())) {
                     std::cout << "Cancelled item use." << '\n';
                     playerActed = false;
                     break;
@@ -399,34 +433,47 @@ void fightEnemy(Player& player, Enemy* enemy) {
 
                 Item* chosenItem = usableItems[itemChoice - 1];
                 const PotionData& potionData = chosenItem->getPotionData();
-                int potionEffect = generateRandomNumber(potionData.getMinPotency(), potionData.getMaxPotency());
+                int potionEffect =
+                    generateRandomNumber(potionData.getMinPotency(), potionData.getMaxPotency());
 
                 switch (potionData.getPotionType()) {
                     case HEALING:
                         player.heal(potionEffect);
-                        std::cout << "You use " << chosenItem->getName() << " and recover " << potionEffect << " health!" << '\n';
+                        std::cout << "You use " << chosenItem->getName() << " and recover "
+                                  << potionEffect << " health!" << '\n';
                         break;
                     case STAMINA:
                         player.recoverStamina(potionEffect);
-                        std::cout << "You use " << chosenItem->getName() << " and recover " << potionEffect << " stamina!" << '\n';
+                        std::cout << "You use " << chosenItem->getName() << " and recover "
+                                  << potionEffect << " stamina!" << '\n';
                         break;
                     case DAMAGE:
                         // Note: This would require a temporary damage boost system
-                        std::cout << "You use " << chosenItem->getName() << " and feel your strength surge! (+" << potionEffect << " damage this fight)" << '\n';
-                        std::cout << "Note: Damage boost system not yet implemented - potion consumed but no effect applied." << '\n';
+                        std::cout << "You use " << chosenItem->getName()
+                                  << " and feel your strength surge! (+" << potionEffect
+                                  << " damage this fight)" << '\n';
+                        std::cout << "Note: Damage boost system not yet implemented - potion "
+                                     "consumed but no effect applied."
+                                  << '\n';
                         break;
                     case DEFENSE:
                         player.changeDefence(potionEffect);
-                        std::cout << "You use " << chosenItem->getName() << " and feel more protected! (+" << potionEffect << " defense)" << '\n';
+                        std::cout << "You use " << chosenItem->getName()
+                                  << " and feel more protected! (+" << potionEffect << " defense)"
+                                  << '\n';
                         break;
                     case RESISTENCE:
                         player.changeResistance(potionEffect);
-                        std::cout << "You use " << chosenItem->getName() << " and feel more resistant to magic! (+" << potionEffect << " resistance)" << '\n';
+                        std::cout << "You use " << chosenItem->getName()
+                                  << " and feel more resistant to magic! (+" << potionEffect
+                                  << " resistance)" << '\n';
                         break;
                     case POISON:
                         enemy->takeDamage(potionEffect);
-                        std::cout << "You use " << chosenItem->getName() << " and throw it at the " << enemy->getName() << "!" << '\n';
-                        std::cout << "The poison deals " << potionEffect << " damage to the enemy!" << '\n';
+                        std::cout << "You use " << chosenItem->getName() << " and throw it at the "
+                                  << enemy->getName() << "!" << '\n';
+                        std::cout << "The poison deals " << potionEffect << " damage to the enemy!"
+                                  << '\n';
                         break;
                 }
 
@@ -440,7 +487,7 @@ void fightEnemy(Player& player, Enemy* enemy) {
                 break;
             }
 
-            case 5: { // Equip Weapon
+            case 5: {  // Equip Weapon
                 if (equipWeapon(player)) {
                     std::cout << "Weapon equipped!" << '\n';
                 } else {
@@ -450,19 +497,21 @@ void fightEnemy(Player& player, Enemy* enemy) {
                 break;
             }
 
-            case 6: { // Try to flee
+            case 6: {  // Try to flee
                 int fleeChance = generateRandomNumber(1, 100);
-                if (fleeChance <= 20) { // 20% chance to flee successfully mid-fight
-                    std::cout << "You successfully escape from the " << enemy->getName() << "!" << '\n';
+                if (fleeChance <= 20) {  // 20% chance to flee successfully mid-fight
+                    std::cout << "You successfully escape from the " << enemy->getName() << "!"
+                              << '\n';
                     delete enemy;
                     return;
                 } else {
-                    std::cout << "You failed to escape! The " << enemy->getName() << " blocks your path!" << '\n';
+                    std::cout << "You failed to escape! The " << enemy->getName()
+                              << " blocks your path!" << '\n';
                 }
                 break;
             }
 
-            case 0: // Skip turn (invalid input)
+            case 0:  // Skip turn (invalid input)
                 std::cout << "You stand there confused, losing your chance to act!" << '\n';
                 playerActed = false;
                 break;
@@ -484,7 +533,8 @@ void fightEnemy(Player& player, Enemy* enemy) {
                 std::cout << "Boss defeated! Bonus rewards granted!" << '\n';
             }
 
-            std::cout << "You gained " << baseExpReward << " experience and " << baseGoldReward << " gold!" << '\n';
+            std::cout << "You gained " << baseExpReward << " experience and " << baseGoldReward
+                      << " gold!" << '\n';
             player.addGold(baseGoldReward);
 
             break;
@@ -499,12 +549,13 @@ void fightEnemy(Player& player, Enemy* enemy) {
 
             // Apply defense bonus if player was defending
             if (playerDefending) {
-                enemyDamage = enemyDamage / 2; // Reduce damage by half when defending
+                enemyDamage = enemyDamage / 2;  // Reduce damage by half when defending
                 std::cout << "You block some of the damage!" << '\n';
             }
 
             player.takeDamage(enemyDamage);
-            std::cout << "The " << enemy->getName() << " deals " << enemyDamage << " damage to you!" << '\n';
+            std::cout << "The " << enemy->getName() << " deals " << enemyDamage << " damage to you!"
+                      << '\n';
         }
 
         // Natural stamina recovery (percentage-based each turn)
@@ -547,12 +598,12 @@ void spawnChest(Player& player) {
 
     if (choice == 'y' || choice == 'Y') {
         // Generate random chest properties
-        bool isLocked = generateRandomNumber(1, 100) > 90; // 10% chance locked
+        bool isLocked = generateRandomNumber(1, 100) > 90;  // 10% chance locked
 
         // Determine trap type
         trap trapType = NONE;
         int trapRoll = generateRandomNumber(1, 100);
-        if (trapRoll <= 20) { // 20% chance trapped
+        if (trapRoll <= 20) {  // 20% chance trapped
             int trapTypeRoll = generateRandomNumber(1, 3);
             switch (trapTypeRoll) {
                 case 1:
@@ -574,19 +625,20 @@ void spawnChest(Player& player) {
         int itemTypeRoll = generateRandomNumber(1, 100);
         ItemType selectedType;
         if (itemTypeRoll <= 40) {
-            selectedType = CURRENCY; // 40% chance for currency
+            selectedType = CURRENCY;  // 40% chance for currency
         } else if (itemTypeRoll <= 65) {
-            selectedType = POTION; // 25% chance for potions
+            selectedType = POTION;  // 25% chance for potions
         } else if (itemTypeRoll <= 85) {
-            selectedType = WEAPON; // 20% chance for weapons
+            selectedType = WEAPON;  // 20% chance for weapons
         } else if (itemTypeRoll <= 95) {
-            selectedType = ARMOR; // 10% chance for armor
+            selectedType = ARMOR;  // 10% chance for armor
         } else {
-            selectedType = MISC; // 5% chance for misc items
+            selectedType = MISC;  // 5% chance for misc items
         }
 
         // Get all items of the selected type
-        std::vector<std::string> itemsOfType = ItemDatabase::getInstance().getItemsByType(selectedType);
+        std::vector<std::string> itemsOfType =
+            ItemDatabase::getInstance().getItemsByType(selectedType);
 
         if (!itemsOfType.empty()) {
             // Select a random item from the type
@@ -633,20 +685,22 @@ void spawnChest(Player& player) {
                 switch (result.trapInfo.type) {
                     case POISON_DART:
                         std::cout << "A poison dart shoots out and hits you!" << '\n';
-                        std::cout << "You take " << result.trapInfo.damage << " poison damage!" << '\n';
+                        std::cout << "You take " << result.trapInfo.damage << " poison damage!"
+                                  << '\n';
                         player.takeDamage(result.trapInfo.damage);
                         break;
 
                     case EXPLOSION:
                         std::cout << "The chest explodes!" << '\n';
-                        std::cout << "You take " << result.trapInfo.damage << " explosive damage!" << '\n';
+                        std::cout << "You take " << result.trapInfo.damage << " explosive damage!"
+                                  << '\n';
                         player.takeDamage(result.trapInfo.damage);
                         if (result.trapInfo.summonsEnemies) {
                             std::cout << "The explosion attracts nearby enemies!" << '\n';
-                                Enemy* enemy = spawnEnemy(player);
-                                if (enemy) {
-                                    fightEnemy(player, enemy);
-                                }
+                            Enemy* enemy = spawnEnemy(player);
+                            if (enemy) {
+                                fightEnemy(player, enemy);
+                            }
                         }
                         break;
 
@@ -694,29 +748,37 @@ void spawnMerchant(Player& player) {
     int rand = generateRandomNumber(1, 6);
     switch (rand) {
         case 1:
-            std::cout << "Merchant: Well hello there young traveler! Would you be intresting in selling me your wares?" << '\n';
+            std::cout << "Merchant: Well hello there young traveler! Would you be intresting in "
+                         "selling me your wares?"
+                      << '\n';
             break;
         case 2:
             std::cout << "Merchant: How are ye doing on this fine day? Care to trade?" << '\n';
             break;
         case 3:
-            std::cout << "Merchant: I have the finest goods in all the land! Care to take a look?" << '\n';
+            std::cout << "Merchant: I have the finest goods in all the land! Care to take a look?"
+                      << '\n';
             break;
         case 4:
             std::cout << "Merchant: I've heard tales of your adventures. Care to trade?" << '\n';
             break;
         case 5:
-            std::cout << "Merchant: I remember when I was your age, full of dreams and ambitions. Care to trade?" << '\n';
+            std::cout << "Merchant: I remember when I was your age, full of dreams and ambitions. "
+                         "Care to trade?"
+                      << '\n';
             break;
         case 6:
-            std::cout << "Merchant: The road is dangerous, but my goods can make it safer. Care to trade?" << '\n';
+            std::cout
+                << "Merchant: The road is dangerous, but my goods can make it safer. Care to trade?"
+                << '\n';
             break;
         default:
             std::cout << "Merchant: Greetings! Care to trade?" << '\n';
             break;
     }
     std::cout << "------ Merchant Inventory ------" << '\n';
-    rand = generateRandomNumber(1, 5); // Random number generator for the items types (as of now only 5 types)
+    rand = generateRandomNumber(
+        1, 5);  // Random number generator for the items types (as of now only 5 types)
     std::vector<std::string> itemNames;
     switch (rand) {
         case 1:
@@ -735,7 +797,7 @@ void spawnMerchant(Player& player) {
             itemNames = ItemDatabase::getInstance().getItemsByType(MISC);
             break;
         default:
-            itemNames = std::vector<std::string>(); // Empty vector
+            itemNames = std::vector<std::string>();  // Empty vector
             break;
     }
     // Build merchant inventory
@@ -748,7 +810,8 @@ void spawnMerchant(Player& player) {
     // Print merchant inventory
     for (size_t i = 0; i < merchantInventory.size(); ++i) {
         Item* item = merchantInventory[i];
-        std::cout << i + 1 << ". " << item->getName() << " (" << item->getValue() << " gold)" << '\n';
+        std::cout << i + 1 << ". " << item->getName() << " (" << item->getValue() << " gold)"
+                  << '\n';
         std::cout << "    " << item->getDescription() << '\n';
         std::cout << "    Type: " << item->getType() << ", Rarity: " << item->getRarity() << '\n';
         // Type-specific data
@@ -811,7 +874,8 @@ void spawnMerchant(Player& player) {
                 } else {
                     player.removeGold(itemToBuy->getValue());
                     player.addItemToInventory(itemToBuy);
-                    std::cout << "You bought " << itemToBuy->getName() << " for " << itemToBuy->getValue() << " gold." << '\n';
+                    std::cout << "You bought " << itemToBuy->getName() << " for "
+                              << itemToBuy->getValue() << " gold." << '\n';
                     merchantInventory.erase(merchantInventory.begin() + (buyChoice - 1));
                 }
                 break;
@@ -836,7 +900,8 @@ void spawnMerchant(Player& player) {
                 }
                 Item* itemToSell = inv[sellChoice - 1];
                 player.addGold(itemToSell->getValue());
-                std::cout << "You sold " << itemToSell->getName() << " for " << itemToSell->getValue() << " gold." << '\n';
+                std::cout << "You sold " << itemToSell->getName() << " for "
+                          << itemToSell->getValue() << " gold." << '\n';
 
                 auto& mutableInv = const_cast<std::vector<Item*>&>(player.getInventory());
                 mutableInv.erase(mutableInv.begin() + (sellChoice - 1));
@@ -854,7 +919,6 @@ void spawnMerchant(Player& player) {
     }
 }
 
-
 void printCharacterInformation(const Player& player) {
     std::cout << "Character Information:" << '\n';
     std::cout << "Name: " << player.getName() << '\n';
@@ -863,7 +927,8 @@ void printCharacterInformation(const Player& player) {
     std::cout << "Defence: " << player.getDefence() << '\n';
     std::cout << "Resistance: " << player.getResistance() << '\n';
     std::cout << "Gold: " << player.getGold() << '\n';
-    std::cout << "Level: " << player.getLevel() << " (" << LevelDatabase::getInstance().getLevelTitle(player.getLevel()) << ")" << '\n';
+    std::cout << "Level: " << player.getLevel() << " ("
+              << LevelDatabase::getInstance().getLevelTitle(player.getLevel()) << ")" << '\n';
     std::cout << "Experience: " << player.getExperience() << '\n';
     std::cout << "Next Level Exp: " << player.getNextLevelExp() << '\n';
 }
@@ -981,7 +1046,7 @@ bool equipWeapon(Player& player) {
     std::cin >> choice;
 
     if (choice == 0 || choice < 0 || choice > static_cast<int>(availableWeapons.size())) {
-        return false; // Cancelled
+        return false;  // Cancelled
     }
 
     Item* chosenWeapon = availableWeapons[choice - 1];

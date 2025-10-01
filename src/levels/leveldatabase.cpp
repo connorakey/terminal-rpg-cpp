@@ -3,24 +3,37 @@
 //
 
 #include "leveldatabase.hpp"
-#include <cmath>
+
 #include <algorithm>
+#include <cmath>
 #include <sstream>
 
-LevelTemplate::LevelTemplate(int level, unsigned int experienceRequired, unsigned int totalExperienceRequired,
-                            unsigned int healthBonus, unsigned int staminaBonus, unsigned int defenceBonus,
-                            unsigned int resistanceBonus, const std::string& levelTitle,
-                            double healthMultiplier, double staminaMultiplier, double defenceMultiplier,
-                            double resistanceMultiplier)
-    : level(level), experienceRequired(experienceRequired), totalExperienceRequired(totalExperienceRequired),
-      healthBonus(healthBonus), staminaBonus(staminaBonus), defenceBonus(defenceBonus),
-      resistanceBonus(resistanceBonus), levelTitle(levelTitle),
-      healthMultiplier(healthMultiplier), staminaMultiplier(staminaMultiplier),
-      defenceMultiplier(defenceMultiplier), resistanceMultiplier(resistanceMultiplier) {}
+LevelTemplate::LevelTemplate(int level, unsigned int experienceRequired,
+                             unsigned int totalExperienceRequired, unsigned int healthBonus,
+                             unsigned int staminaBonus, unsigned int defenceBonus,
+                             unsigned int resistanceBonus, const std::string& levelTitle,
+                             double healthMultiplier, double staminaMultiplier,
+                             double defenceMultiplier, double resistanceMultiplier)
+    : level(level),
+      experienceRequired(experienceRequired),
+      totalExperienceRequired(totalExperienceRequired),
+      healthBonus(healthBonus),
+      staminaBonus(staminaBonus),
+      defenceBonus(defenceBonus),
+      resistanceBonus(resistanceBonus),
+      levelTitle(levelTitle),
+      healthMultiplier(healthMultiplier),
+      staminaMultiplier(staminaMultiplier),
+      defenceMultiplier(defenceMultiplier),
+      resistanceMultiplier(resistanceMultiplier) {}
 
-ExperienceReward::ExperienceReward(int baseExp, double levelMult, double rarityMult, int minExp, int maxExp)
-    : baseExperience(baseExp), levelDifferenceMultiplier(levelMult), rarityMultiplier(rarityMult),
-      minExperience(minExp), maxExperience(maxExp) {}
+ExperienceReward::ExperienceReward(int baseExp, double levelMult, double rarityMult, int minExp,
+                                   int maxExp)
+    : baseExperience(baseExp),
+      levelDifferenceMultiplier(levelMult),
+      rarityMultiplier(rarityMult),
+      minExperience(minExp),
+      maxExperience(maxExp) {}
 
 LevelDatabase& LevelDatabase::getInstance() {
     static LevelDatabase instance;
@@ -56,7 +69,7 @@ int LevelDatabase::getLevelFromExperience(unsigned int totalExperience) const {
 
 unsigned int LevelDatabase::getExperienceForNextLevel(int currentLevel) const {
     if (currentLevel >= getMaxLevel()) {
-        return 0; // Already at max level
+        return 0;  // Already at max level
     }
 
     const LevelTemplate* nextLevel = getLevelTemplate(currentLevel + 1);
@@ -68,9 +81,9 @@ int LevelDatabase::calculateExperienceReward(int playerLevel, int enemyLevel, bo
     int baseExp = experienceRewards.baseExperience;
 
     double levelDiff = static_cast<double>(enemyLevel - playerLevel);
-    double levelModifier = 1.0 + (levelDiff * 0.15); // 15% per level difference
-    levelModifier = std::max(0.25, levelModifier); // Minimum 25% exp
-    levelModifier = std::min(3.0, levelModifier);   // Maximum 300% exp
+    double levelModifier = 1.0 + (levelDiff * 0.15);  // 15% per level difference
+    levelModifier = std::max(0.25, levelModifier);    // Minimum 25% exp
+    levelModifier = std::min(3.0, levelModifier);     // Maximum 300% exp
 
     double enemyLevelModifier = 1.0 + (enemyLevel * 0.1);
 
@@ -84,7 +97,8 @@ int LevelDatabase::calculateExperienceReward(int playerLevel, int enemyLevel, bo
     return finalExp;
 }
 
-std::string LevelDatabase::getLevelProgressionInfo(int currentLevel, unsigned int currentExp) const {
+std::string LevelDatabase::getLevelProgressionInfo(int currentLevel,
+                                                   unsigned int currentExp) const {
     std::ostringstream info;
     const LevelTemplate* currentTemplate = getLevelTemplate(currentLevel);
 
@@ -108,11 +122,12 @@ std::string LevelDatabase::getLevelProgressionInfo(int currentLevel, unsigned in
 
 int LevelDatabase::checkLevelUp(unsigned int currentExperience, int currentLevel) const {
     int newLevel = getLevelFromExperience(currentExperience);
-    return std::max(newLevel, currentLevel); // Never level down
+    return std::max(newLevel, currentLevel);  // Never level down
 }
 
 void LevelDatabase::getStatBonuses(int level, unsigned int& healthBonus, unsigned int& staminaBonus,
-                                  unsigned int& defenceBonus, unsigned int& resistanceBonus) const {
+                                   unsigned int& defenceBonus,
+                                   unsigned int& resistanceBonus) const {
     healthBonus = 0;
     staminaBonus = 0;
     defenceBonus = 0;
@@ -159,61 +174,53 @@ unsigned int LevelDatabase::calculateExperienceRequirement(int level) const {
 }
 
 void LevelDatabase::createEarlyLevels() {
-    auto level1 = std::make_unique<LevelTemplate>(
-        1, 0, 0, 0, 0, 0, 0, "Novice Adventurer",
-        1.0, 1.0, 1.0, 1.0);
+    auto level1 = std::make_unique<LevelTemplate>(1, 0, 0, 0, 0, 0, 0, "Novice Adventurer", 1.0,
+                                                  1.0, 1.0, 1.0);
     addLevelTemplate(std::move(level1));
 
-    auto level2 = std::make_unique<LevelTemplate>(
-        2, 100, 100, 15, 5, 1, 0, "Apprentice",
-        1.0, 1.0, 1.0, 1.0);
+    auto level2 =
+        std::make_unique<LevelTemplate>(2, 100, 100, 15, 5, 1, 0, "Apprentice", 1.0, 1.0, 1.0, 1.0);
     addLevelTemplate(std::move(level2));
 
-    auto level3 = std::make_unique<LevelTemplate>(
-        3, 150, 250, 20, 8, 1, 1, "Trainee",
-        1.0, 1.0, 1.0, 1.0);
+    auto level3 =
+        std::make_unique<LevelTemplate>(3, 150, 250, 20, 8, 1, 1, "Trainee", 1.0, 1.0, 1.0, 1.0);
     addLevelTemplate(std::move(level3));
 
-    auto level4 = std::make_unique<LevelTemplate>(
-        4, 200, 450, 25, 10, 2, 1, "Scout",
-        1.0, 1.0, 1.0, 1.0);
+    auto level4 =
+        std::make_unique<LevelTemplate>(4, 200, 450, 25, 10, 2, 1, "Scout", 1.0, 1.0, 1.0, 1.0);
     addLevelTemplate(std::move(level4));
 
-    auto level5 = std::make_unique<LevelTemplate>(
-        5, 300, 750, 30, 12, 2, 1, "Warrior",
-        1.1, 1.0, 1.0, 1.0);
+    auto level5 =
+        std::make_unique<LevelTemplate>(5, 300, 750, 30, 12, 2, 1, "Warrior", 1.1, 1.0, 1.0, 1.0);
     addLevelTemplate(std::move(level5));
 
-    auto level6 = std::make_unique<LevelTemplate>(
-        6, 400, 1150, 35, 15, 3, 2, "Veteran",
-        1.1, 1.0, 1.0, 1.0);
+    auto level6 =
+        std::make_unique<LevelTemplate>(6, 400, 1150, 35, 15, 3, 2, "Veteran", 1.1, 1.0, 1.0, 1.0);
     addLevelTemplate(std::move(level6));
 
-    auto level7 = std::make_unique<LevelTemplate>(
-        7, 500, 1650, 40, 18, 3, 2, "Skilled Fighter",
-        1.1, 1.1, 1.0, 1.0);
+    auto level7 = std::make_unique<LevelTemplate>(7, 500, 1650, 40, 18, 3, 2, "Skilled Fighter",
+                                                  1.1, 1.1, 1.0, 1.0);
     addLevelTemplate(std::move(level7));
 
-    auto level8 = std::make_unique<LevelTemplate>(
-        8, 650, 2300, 45, 20, 4, 3, "Seasoned Warrior",
-        1.1, 1.1, 1.0, 1.0);
+    auto level8 = std::make_unique<LevelTemplate>(8, 650, 2300, 45, 20, 4, 3, "Seasoned Warrior",
+                                                  1.1, 1.1, 1.0, 1.0);
     addLevelTemplate(std::move(level8));
 
-    auto level9 = std::make_unique<LevelTemplate>(
-        9, 800, 3100, 50, 25, 4, 3, "Veteran Warrior",
-        1.1, 1.1, 1.1, 1.0);
+    auto level9 = std::make_unique<LevelTemplate>(9, 800, 3100, 50, 25, 4, 3, "Veteran Warrior",
+                                                  1.1, 1.1, 1.1, 1.0);
     addLevelTemplate(std::move(level9));
 
-    auto level10 = std::make_unique<LevelTemplate>(
-        10, 1000, 4100, 60, 30, 5, 4, "Elite Warrior",
-        1.2, 1.1, 1.1, 1.1);
+    auto level10 = std::make_unique<LevelTemplate>(10, 1000, 4100, 60, 30, 5, 4, "Elite Warrior",
+                                                   1.2, 1.1, 1.1, 1.1);
     addLevelTemplate(std::move(level10));
 }
 
 void LevelDatabase::createMidLevels() {
     for (int level = 11; level <= 25; ++level) {
         unsigned int expRequired = calculateExperienceRequirement(level);
-        unsigned int totalExp = (level > 1) ? getLevelTemplate(level - 1)->totalExperienceRequired + expRequired : expRequired;
+        unsigned int totalExp =
+            (level > 1) ? getLevelTemplate(level - 1)->totalExperienceRequired + expRequired
+                        : expRequired;
 
         unsigned int healthBonus = 40 + (level - 10) * 8;
         unsigned int staminaBonus = 20 + (level - 10) * 4;

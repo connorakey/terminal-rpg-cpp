@@ -5,10 +5,14 @@
 #include "itemdatabase.hpp"
 
 // ItemTemplate constructor
-ItemTemplate::ItemTemplate(const std::string& name, const std::string& description,
-                          int value, int weight, ItemType type, Rarity rarity)
-    : name(name), description(description), value(value), weight(weight),
-      type(type), rarity(rarity) {}
+ItemTemplate::ItemTemplate(const std::string& name, const std::string& description, int value,
+                           int weight, ItemType type, Rarity rarity)
+    : name(name),
+      description(description),
+      value(value),
+      weight(weight),
+      type(type),
+      rarity(rarity) {}
 
 // ItemDatabase implementation
 ItemDatabase& ItemDatabase::getInstance() {
@@ -36,8 +40,8 @@ Item* ItemDatabase::createItem(const std::string& itemName, int inventorySlotId)
 
     // Create new item with the inventory slot ID
     Item* item = new Item(inventorySlotId, template_ptr->name, template_ptr->description,
-                         template_ptr->value, template_ptr->weight, template_ptr->type,
-                         template_ptr->rarity);
+                          template_ptr->value, template_ptr->weight, template_ptr->type,
+                          template_ptr->rarity);
 
     // Set type-specific data based on item type
     switch (template_ptr->type) {
@@ -100,8 +104,8 @@ void ItemDatabase::createWeapons() {
     ironSword->weaponData = WeaponData(8, 12, 85, 1000, SWORD, 100, 10);
     addItemTemplate(std::move(ironSword));
 
-    auto steelSword = std::make_unique<ItemTemplate>(
-        "Steel Sword", "A well-crafted steel blade", 120, 6, WEAPON, UNCOMMON);
+    auto steelSword = std::make_unique<ItemTemplate>("Steel Sword", "A well-crafted steel blade",
+                                                     120, 6, WEAPON, UNCOMMON);
     steelSword->weaponData = WeaponData(12, 18, 88, 1200, SWORD, 150, 12);
     addItemTemplate(std::move(steelSword));
 
@@ -111,19 +115,20 @@ void ItemDatabase::createWeapons() {
     addItemTemplate(std::move(mysticSword));
 
     // Bows
-    auto woodenBow = std::make_unique<ItemTemplate>(
-        "Wooden Bow", "A simple bow made from oak wood", 35, 3, WEAPON, COMMON);
+    auto woodenBow = std::make_unique<ItemTemplate>("Wooden Bow", "A simple bow made from oak wood",
+                                                    35, 3, WEAPON, COMMON);
     woodenBow->weaponData = WeaponData(6, 10, 75, 1500, BOW, 80, 8);
     addItemTemplate(std::move(woodenBow));
 
     auto elfBow = std::make_unique<ItemTemplate>(
-        "Longbow", "An elegant longbow forged from the tops of the grandest mountain ranges.", 300, 2, WEAPON, RARE);
+        "Longbow", "An elegant longbow forged from the tops of the grandest mountain ranges.", 300,
+        2, WEAPON, RARE);
     elfBow->weaponData = WeaponData(15, 22, 90, 1000, BOW, 180, 10);
     addItemTemplate(std::move(elfBow));
 
     // Daggers
-    auto rustyDagger = std::make_unique<ItemTemplate>(
-        "Rusty Dagger", "An old, worn dagger", 15, 1, WEAPON, COMMON);
+    auto rustyDagger = std::make_unique<ItemTemplate>("Rusty Dagger", "An old, worn dagger", 15, 1,
+                                                      WEAPON, COMMON);
     rustyDagger->weaponData = WeaponData(4, 8, 90, 500, DAGGER, 50, 5);
     addItemTemplate(std::move(rustyDagger));
 
@@ -133,8 +138,8 @@ void ItemDatabase::createWeapons() {
     addItemTemplate(std::move(poisonDagger));
 
     // Axes
-    auto battleAxe = std::make_unique<ItemTemplate>(
-        "Battle Axe", "A heavy dual-handed axe", 80, 8, WEAPON, UNCOMMON);
+    auto battleAxe = std::make_unique<ItemTemplate>("Battle Axe", "A heavy dual-handed axe", 80, 8,
+                                                    WEAPON, UNCOMMON);
     battleAxe->weaponData = WeaponData(15, 25, 70, 2000, AXE, 120, 20);
     addItemTemplate(std::move(battleAxe));
 
@@ -154,7 +159,8 @@ void ItemDatabase::createArmor() {
 
     // Chain Mail
     auto chainMail = std::make_unique<ItemTemplate>(
-        "Chain Mail", "Interlocked metal rings provide decent protection", 100, 15, ARMOR, UNCOMMON);
+        "Chain Mail", "Interlocked metal rings provide decent protection", 100, 15, ARMOR,
+        UNCOMMON);
     chainMail->armorData = ArmorData(3, 150);
     addItemTemplate(std::move(chainMail));
 
@@ -165,8 +171,9 @@ void ItemDatabase::createArmor() {
     addItemTemplate(std::move(steelArmor));
 
     // Dragon Scale Armor
-    auto dragonArmor = std::make_unique<ItemTemplate>(
-        "Dragon Scale Armor", "Armor crafted from ancient dragon scales", 1000, 20, ARMOR, LEGENDARY);
+    auto dragonArmor = std::make_unique<ItemTemplate>("Dragon Scale Armor",
+                                                      "Armor crafted from ancient dragon scales",
+                                                      1000, 20, ARMOR, LEGENDARY);
     dragonArmor->armorData = ArmorData(5, 300);
     addItemTemplate(std::move(dragonArmor));
 
@@ -221,8 +228,8 @@ void ItemDatabase::createPotions() {
 
 void ItemDatabase::createMiscItems() {
     // Currency Items
-    auto goldCoin = std::make_unique<ItemTemplate>(
-        "Gold Coin", "A shiny gold coin", 1, 0, CURRENCY, COMMON);
+    auto goldCoin =
+        std::make_unique<ItemTemplate>("Gold Coin", "A shiny gold coin", 1, 0, CURRENCY, COMMON);
     addItemTemplate(std::move(goldCoin));
 
     auto silverCoin = std::make_unique<ItemTemplate>(
@@ -237,18 +244,18 @@ void ItemDatabase::createMiscItems() {
         "Treasure Chest", "A chest filled with valuable coins", 50, 5, CURRENCY, RARE);
     addItemTemplate(std::move(treasureChest));
 
-    auto gem = std::make_unique<ItemTemplate>(
-        "Precious Gem", "A valuable gemstone", 200, 1, CURRENCY, RARE);
+    auto gem = std::make_unique<ItemTemplate>("Precious Gem", "A valuable gemstone", 200, 1,
+                                              CURRENCY, RARE);
     addItemTemplate(std::move(gem));
 
     // Regular Misc Items
     // Currency/Valuable Items
-    auto bread = std::make_unique<ItemTemplate>(
-        "Bread", "A simple loaf of bread", 3, 1, MISC, COMMON);
+    auto bread =
+        std::make_unique<ItemTemplate>("Bread", "A simple loaf of bread", 3, 1, MISC, COMMON);
     addItemTemplate(std::move(bread));
 
-    auto torch = std::make_unique<ItemTemplate>(
-        "Torch", "A wooden torch for lighting dark areas", 5, 2, MISC, COMMON);
+    auto torch = std::make_unique<ItemTemplate>("Torch", "A wooden torch for lighting dark areas",
+                                                5, 2, MISC, COMMON);
     addItemTemplate(std::move(torch));
 
     // Quest Items
