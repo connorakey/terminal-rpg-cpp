@@ -107,8 +107,6 @@ private:
     std::vector<Item*> inventory;
     Item* equippedWeapon;
     Item* equippedArmor;
-
-    // Base stats (without level bonuses)
     unsigned int baseMaxHealth;
     unsigned int baseMaxStamina;
     unsigned int baseDefence;

@@ -21,7 +21,7 @@ Player::Player(const std::string& name,
     : name(name), health(health), maxHealth(maxHealth), stamina(stamina), maxStamina(maxStamina),
       defence(defence), resistance(resistance), level(level), experience(experience), gold(gold), nextLevelExp(nextLevelExp),
       totalWeight(totalWeight), inventory(inventory), equippedWeapon(equippedWeapon), equippedArmor(equippedArmor),
-      baseMaxHealth(100), baseMaxStamina(50), baseDefence(0), baseResistance(0) {
+      baseMaxHealth(maxHealth), baseMaxStamina(maxStamina), baseDefence(defence), baseResistance(resistance) {
 
     // Update stats based on current level
     updateStatsForLevel();
@@ -61,14 +61,12 @@ void Player::recoverStamina(unsigned int amount) {
 }
 
 void Player::changeMaxHealth(signed int amount) {
-    maxHealth += amount;
-    if (maxHealth < 1) maxHealth = 1;
+    maxHealth = std::max(1, static_cast<int>(maxHealth) + amount);
     if (health > static_cast<int>(maxHealth)) health = static_cast<int>(maxHealth);
 }
 
 void Player::changeMaxStamina(signed int amount) {
-    maxStamina += amount;
-    if (maxStamina < 1) maxStamina = 1;
+    maxStamina = std::max(1, static_cast<int>(maxStamina) + amount);
     if (stamina > maxStamina) stamina = maxStamina;
 }
 
@@ -112,6 +110,12 @@ bool Player::pickupItem(Item* item) {
         delete item;
         return true;
     } else {
+        // Weight limit check (assume 100 for now, adjust as needed)
+        unsigned int maxWeight = 100;
+        if (totalWeight + item->getWeight() > maxWeight) {
+            std::cout << "Cannot pick up " << item->getName() << ", too heavy!" << std::endl;
+            return false;
+        }
         // Regular items are added to inventory
         addItemToInventory(item);
         std::cout << "Picked up " << item->getName() << " and added it to inventory." << std::endl;
