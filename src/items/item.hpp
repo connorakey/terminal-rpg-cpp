@@ -92,7 +92,7 @@ public:
     void setDurability(int durability);
 
 private:
-    int armorValue; // armor rating (rating system out of 5 stars)
+    int armorValue; // armour protection points
     int durability; // amount of hits before breaking
 };
 
