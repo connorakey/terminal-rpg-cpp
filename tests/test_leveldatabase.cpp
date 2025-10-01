@@ -72,7 +72,7 @@ TEST_CASE("LevelDatabase initializes and retrieves level templates correctly", "
     const LevelTemplate* level45 = db.getLevelTemplate(45);
     REQUIRE(level45 != nullptr);
     REQUIRE(level45->level == 45);
-    REQUIRE(level45->levelTitle == "Ascendant"); // Fixed: level 45 is "Ascendant", not "Demigod"
+    REQUIRE(level45->levelTitle == "Ascendant");
 
     // Test endgame levels
     const LevelTemplate* level70 = db.getLevelTemplate(70);
