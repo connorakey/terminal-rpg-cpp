@@ -16,9 +16,14 @@ if not exist "%BUILD_DIR%" (
 echo Configuring project with CMake...
 cmake -S . -B %BUILD_DIR% -DCMAKE_BUILD_TYPE=Release
 
+echo Running tests with ctest before build...
+pushd %BUILD_DIR%
+ctest --output-on-failure
+popd
+
 REM Step 3: Build the project
 echo Building project...
 cmake --build %BUILD_DIR% --config Release
 
 echo.
-echo ✅ Build completed!
+echo ✅ Tests and build completed!
