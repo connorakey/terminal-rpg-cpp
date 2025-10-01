@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
-#include "../src/items/itemdatabase.hpp"
+
 #include "../src/items/item.hpp"
+#include "../src/items/itemdatabase.hpp"
 
 TEST_CASE("ItemDatabase singleton pattern works correctly", "[itemdatabase]") {
     ItemDatabase& db1 = ItemDatabase::getInstance();
@@ -121,6 +122,7 @@ TEST_CASE("ItemDatabase handles edge cases and empty database", "[itemdatabase]"
     REQUIRE(std::find(currency.begin(), currency.end(), "Gold Coin") != currency.end());
     // Check for either "Gem" or "Precious Gem" - break into separate checks
     bool hasGem = std::find(currency.begin(), currency.end(), "Gem") != currency.end();
-    bool hasPreciousGem = std::find(currency.begin(), currency.end(), "Precious Gem") != currency.end();
+    bool hasPreciousGem =
+        std::find(currency.begin(), currency.end(), "Precious Gem") != currency.end();
     REQUIRE((hasGem || hasPreciousGem));
 }
