@@ -1,7 +1,7 @@
 #include <algorithm>
+#include <catch2/catch_test_macros.hpp>
 #include <string>
 #include <vector>
-#include <catch2/catch_test_macros.hpp>
 
 #include "../src/items/item.hpp"
 #include "../src/items/itemdatabase.hpp"
