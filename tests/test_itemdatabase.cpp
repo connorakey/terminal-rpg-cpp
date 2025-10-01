@@ -1,8 +1,8 @@
-#include <catch2/catch_test_macros.hpp>
 #include <algorithm>
+#include <catch2/catch_test_macros.hpp>
 
-#include "../src/items/itemdatabase.hpp"
 #include "../src/items/item.hpp"
+#include "../src/items/itemdatabase.hpp"
 
 TEST_CASE("ItemDatabase singleton pattern works correctly", "[itemdatabase]") {
     ItemDatabase& db1 = ItemDatabase::getInstance();
