@@ -51,6 +51,7 @@ add_executable(tests
     src/chest/chest.cpp
     src/items/item.cpp
     src/enemies/enemy.cpp
+        tests/test_item.cpp
 )
 
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
