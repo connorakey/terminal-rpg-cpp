@@ -1,0 +1,131 @@
+name: Build Release Binaries
+
+on:
+  # Only build release binaries on version tags and manual dispatch
+  push:
+    tags: [ "v*.*.*" ]  # More specific semver pattern (v1.0.0, v1.2.3, etc.)
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag for the release (e.g., v1.0.0)'
+        required: false
+        default: 'manual-build'
+      create_release:
+        description: 'Create GitHub release?'
+        type: boolean
+        default: false
+
+jobs:
+  build-release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            executable_suffix: .exe
+            cmake_generator: "Visual Studio 17 2022"
+            build_config: Release
+          - os: ubuntu-latest
+            platform: linux
+            executable_suffix: ""
+            cmake_generator: "Unix Makefiles"
+            build_config: Release
+          - os: macos-latest
+            platform: macos
+            executable_suffix: ""
+            cmake_generator: "Unix Makefiles"
+            build_config: Release
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up build environment (Linux)
+      if: matrix.platform == 'linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+
+    - name: Set up build environment (macOS)
+      if: matrix.platform == 'macos'
+      run: |
+        brew install cmake
+
+    - name: Run tests first
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_config }}
+        cmake --build . --config ${{ matrix.build_config }}
+        ctest --output-on-failure --build-config ${{ matrix.build_config }}
+
+    - name: Build release binary
+      run: |
+        mkdir -p release-build
+        cd release-build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE="-O3 -DNDEBUG"
+        cmake --build . --config Release
+
+    - name: Create release package (Windows)
+      if: matrix.platform == 'windows'
+      run: |
+        mkdir -p terminal-rpg-${{ matrix.platform }}
+        copy release-build\Release\terminal_rpg.exe terminal-rpg-${{ matrix.platform }}\
+        echo "Built on Windows with MSVC" > terminal-rpg-${{ matrix.platform }}\README.txt
+
+    - name: Create release package (Linux/macOS)
+      if: matrix.platform != 'windows'
+      run: |
+        mkdir -p terminal-rpg-${{ matrix.platform }}
+        cp release-build/terminal_rpg terminal-rpg-${{ matrix.platform }}/
+        echo "Built on ${{ matrix.platform }}" > terminal-rpg-${{ matrix.platform }}/README.txt
+
+    - name: Make binary executable (Linux/macOS)
+      if: matrix.platform != 'windows'
+      run: chmod +x terminal-rpg-${{ matrix.platform }}/terminal_rpg
+
+    - name: Archive release package
+      uses: actions/upload-artifact@v4
+      with:
+        name: terminal-rpg-${{ matrix.platform }}
+        path: terminal-rpg-${{ matrix.platform }}/
+        retention-days: 30
+
+  create-release:
+    needs: build-release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true')
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create release archives
+      run: |
+        cd artifacts
+        for dir in */; do
+          platform=$(basename "$dir")
+          if [[ "$platform" == "terminal-rpg-windows" ]]; then
+            cd "$dir" && zip -r "../${platform}.zip" . && cd ..
+          else
+            tar -czf "${platform}.tar.gz" -C "$dir" .
+          fi
+        done
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.event.inputs.version || github.ref_name }}
+        files: |
+          artifacts/*.zip
+          artifacts/*.tar.gz
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
