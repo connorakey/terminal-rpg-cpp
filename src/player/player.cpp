@@ -23,8 +23,6 @@ Player::Player(const std::string& name,
       totalWeight(totalWeight), inventory(inventory), equippedWeapon(equippedWeapon), equippedArmor(equippedArmor),
       baseMaxHealth(maxHealth), baseMaxStamina(maxStamina), baseDefence(defence), baseResistance(resistance) {
 
-    // Update stats based on current level
-    updateStatsForLevel();
 }
 
 void Player::takeDamage(unsigned int damage) {
