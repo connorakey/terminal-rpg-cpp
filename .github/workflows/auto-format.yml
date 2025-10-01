@@ -1,0 +1,34 @@
+name: Auto-format C++ Code
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Needed to push code changes
+      pull-requests: write  # Optional, useful for commenting or auto-merge
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install clang-format
+      run: sudo apt-get install -y clang-format
+
+    - name: Run clang-format
+      run: |
+        FILES=$(find . -regex '.*\.\(cpp\|h\)$')
+        echo "$FILES" | xargs clang-format -i
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add .
+        git diff --cached --quiet || (git commit -m "Auto-format C++ code" && git push)
