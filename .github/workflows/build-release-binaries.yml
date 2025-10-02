@@ -116,16 +116,3 @@ jobs:
             tar -czf "${platform}.tar.gz" -C "$dir" .
           fi
         done
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ github.event.inputs.version || github.ref_name }}
-        files: |
-          artifacts/*.zip
-          artifacts/*.tar.gz
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.G1THUB_TOKEN }}
